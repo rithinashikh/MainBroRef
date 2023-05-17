@@ -1,0 +1,186 @@
+{% extends "base/base.html" %}
+{% block account %}
+{% if flag %}
+{% include "base/account.html" %}
+{% endif %}  
+{% endblock %}
+{% block offcanvas %}
+{% if flag %}
+    {% include "base/loggedin.html" %}
+    
+    {% else %}
+    {% include "base/loggedout.html" %}
+        
+    {% endif %}
+{% endblock %}
+    
+{% block navigation %}
+    
+{% if flag %}
+    
+{% include "base/loggedin.html" %}
+{% else %}
+{% include "base/loggedout.html" %}
+{% endif %} 
+    
+    
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="{% url 'homepage' %}"><i class="fa fa-home"></i> Home</a>
+                    
+                    <span>Shop</span>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Shop Section Begin -->
+<section class="shop spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-6">
+                {% include "base/filter.html" %}
+            </div>
+<!-- #products -->
+            
+            <div class="col-lg-9 col-md-9 col-sm-6">
+                <div class="row" id="filtered_products">
+                     <!-- Page Preloder -->
+                    <div id="pre_loder">
+                        <div class="loader"></div>
+                    </div>
+                   
+                    {% for product in products %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="product__item">
+                            <div class="product__item__pic set-bg" data-setbg="/media/{{product.product_images.first.img}}">
+                                {% if product.tag_product.first %}
+                                    {% if product.tag_product.first.name == 'New' %}
+                                        <div class="label new">{{ product.tag_product.first.name }}</div>
+                                    {% elif product.tag_product.first.name == 'Sale' %}
+                                        <div class="label sale">{{ product.tag_product.first.name }}</div>
+                                    {% elif product.tag_product.first.name == 'Trending' %}
+                                        <div class="label stockblue">{{ product.tag_product.first.name }}</div>
+                                    {% else %}
+                                        <div class="label stockblue">{{ product.tag_product.first.name }}</div>
+                                    {% endif %}
+                                {% endif %}
+
+                                <ul class="product__hover">
+                                    <li><a href="/media/{{product.product_images.first.img}}" class="image-popup"><span class="arrow_expand"></span></a></li>
+                                    <li><a href="#"><span id="addToWishlist" class="icon_heart_alt" data-index="{{product.uid}}" onclick="addToWishlist(event)"></span></a></li>
+                                    <li><a href="{% url 'product-details' product.slug %}"><span class="icon_bag_alt"></span></a></li>
+                                </ul>
+                            </div>
+                            <div class="product__item__text">
+                                <h6><a href="{% url 'product-details' product.slug %}">{{product.name}}</a></h6>
+                                {% for key,value in avarage_rating.items %}
+                                {% if key == product.uid %}
+                                {% if value %}  
+                                <div class="rating"><span>{{value}} <i class="fa fa-star"></i></span></div>
+                               {% endif %}{% endif %}{% endfor %}
+                                <div class="product__price">₹{{product.selling_price}}</div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                   {% endfor %}
+                    
+                   
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if products.has_other_pages %}
+                   <div class="pagination">
+                       {% if products.has_previous %}
+                           <a href="?page=1" class="page-link">&laquo; First</a>
+                           <a href="?page={{ products.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+                       {% endif %}
+       
+                       {% for i in products.paginator.page_range %}
+                           {% if products.number == i %}
+                               <span class="page active">{{ i }}</span>
+                           {% else %}
+                               <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                           {% endif %}
+                       {% endfor %}
+       
+                       {% if orders.has_next %}
+                           <a href="?page={{ products.next_page_number }}" class="page-link">Next &rsaquo;</a>
+                           <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                       {% endif %}
+                   </div>
+               {% endif %}
+</section>
+<!-- Shop Section End -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function addToWishlist(event) {
+    event.preventDefault(); // prevent the default anchor tag behavior
+    var input = event.target; 
+    console.log('input:',input);
+    var _productUid=input.getAttribute('data-index');
+    var token=$('input[name=csrfmiddlewaretoken]').val();
+        
+        if (user=== 'AnonymousUser'){
+            console.log('not authenticated')
+        }else{
+            addtowishlist(_productUid)
+        }
+  }
+  function addtowishlist(_productUid){
+        console.log('user:',user,'productuid',_productUid)
+
+        var url = '/add-to-wishlist/'
+        fetch(url, {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRFToken' : csrftoken,
+            },
+            body:JSON.stringify({
+                'uid':_productUid,
+                
+            })
+        })
+        .then((response) =>{
+            return response.json()
+        })
+        .then((data) =>{
+            console.log('data:',data)
+            location.reload()
+            alertify.alert().setting({
+            'message': JSON.stringify(data),
+            'basic': true,
+            'modal': true,
+            'closable': true,
+            'transition': 'fade',
+            'title': '',
+            'labels': {
+                ok: 'OK'
+            },
+            'className': 'my-alert'
+            }).show();
+        })
+
+     };
+
+
+</script>
+
+{% endblock %}

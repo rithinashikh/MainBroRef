@@ -1,0 +1,182 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}categories{% endblock %}
+
+{% block content %}
+
+<div class="card-box pb-10">
+    <div class="m-3 pt-5">
+    <form method="get" autocomplete="off">
+        <div class="form-row">
+            <div class="col-md-4 mb-3">
+                <label for="from_date">From Date:</label>
+                <input type="date" class="form-control" name="from_date" value="{{ request.GET.from_date }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="to_date">To Date:</label>
+                <input type="date" class="form-control" name="to_date" value="{{ request.GET.to_date }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <button type="submit" class="btn btn-primary" style="margin-top: 30px;">Filter</button>
+            </div>
+        </div>
+    </form></div>
+	<div class="h5 pd-20 mb-0"></div>
+    <div class="table-responsive">
+        <table style="margin-left:20px" class="table-striped table nowrap">
+            <thead>
+                <h4 class='text-center'> Orders<h4>
+                <tr>
+                    <th scope="col">No.</th> 
+                    <th scope="col">Transaction ID.</th> 
+                    <th scope="col">Customer Name</th>
+                    <th scope="col">Date of Order</th>
+                    <th scope="col">Date of Delivery</th>
+                    <th scope="col">Shipping Address</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Mode of Payment</th>
+                    <th scope="col">Order summary</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr id="order-{{ order.uid }}">
+                    <td>{{forloop.counter}}</td>
+                    <td>{{order.transaction_id}}</td>
+                    <td>{{order.customer}}</td>
+                    <td>{{order.date_ordered}}</td>
+                    <td>
+                    <input type="date" class="form-control" id="delivery-date-{{ order.uid }}" value="{{order.delivery_date|date:'Y-m-d'}}" data-id="{{ order.uid }}" style="background: bisque;">
+    
+                    </td>
+                    <td>
+                        <p>{{order.shipping_address.address}}</p>
+                        <p><span>{{order.shipping_address.city}}</span><span>{{order.shipping_address.state}}</span></p>
+                        <p><span>{{order.shipping_address.state}}</span><span>{{order.shipping_address.pincode}}</span></p>
+                        <p><span>{{order.shipping_address.email}}</span><br><span>{{order.shipping_address.phone}}</span></p>
+                    </td> 
+                    <td class="cart__price">₹{{order.get_grand_total}} </td>
+                    <td class="cart__quantity">
+                        <select class="form-control" id="status-{{ order.uid }}" data-id="{{ order.uid }}" style="background: bisque;width: 120px;">
+                            {% for choice in order.status_choices %}
+                                {% if choice.0 == order.status %}
+                                    <option value="{{ choice.0 }}" selected>{{ choice.1 }}</option>
+                                {% else %}
+                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="cart__total text-center">{{order.payment_method}}</td>
+                    <td class="cart__total text-center"><a href="{% url 'view_order_details' order.uid  %}"><button type="button" class="btn btn-outline-success btn-sm">View</button></a></td>
+                    <td>
+                        <!-- Save button -->
+                        <button type="button" style="margin: 7px;" class="btn btn-outline-primary btn-sm save-btn" data-uid="{{ order.uid }}">Save</button>
+                    </td>
+                </tr>
+                {% endfor%}	
+            </tbody>
+        </table>
+    </div>
+    {% if orders.has_other_pages %}
+    <div class="pagination">
+        {% if orders.has_previous %}
+            <a href="?page=1" class="page-link">&laquo; First</a>
+            <a href="?page={{ orders.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+        {% endif %}
+
+        {% for i in orders.paginator.page_range %}
+            {% if orders.number == i %}
+                <span class="page active">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if orders.has_next %}
+            <a href="?page={{ orders.next_page_number }}" class="page-link">Next &rsaquo;</a>
+            <a href="?page={{ orders.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+        {% endif %}
+    </div>
+{% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Add event listener for the save button
+    $('.save-btn').on('click', function() {
+        var orderUId = $(this).data('uid');
+        var deliveryDate = $('#delivery-date-' + orderUId).val();
+        var status = $('#status-' + orderUId).val();
+        console.log(orderUId,deliveryDate,status)
+        console.log(csrftoken)
+        update_order_details(orderUId,deliveryDate,status)
+    });
+});
+    function update_order_details(orderUId,deliveryDate,status){
+        var url='/update-order/'
+        fetch(url,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRFToken' : csrftoken, 
+            },
+            
+            body:JSON.stringify({
+                'orderUId':orderUId,
+                'deliveryDate':deliveryDate,
+                'status':status
+            })
+        })
+        .then((response) =>{
+        return response.json()
+      })
+      .then((data) =>{
+        console.log('data:',data)
+        location.reload()
+        alertify.alert().setting({
+          'message': JSON.stringify(data),
+            'basic': true,
+            'modal': true,
+            'closable': true,
+            'transition': 'fade',
+            'title': '',
+            'labels': {
+                ok: 'OK'
+            },
+            'className': 'my-alert'
+            }).show();
+        })
+    }
+   
+        // Send the data to the server using AJAX
+        // $.ajax({
+        //     url: 'admin-panel/update_order/',
+        //     type: 'POST',
+        //     data: {
+        //         'order_id': orderId,
+        //         'delivery_date': deliveryDate,
+        //         'status': status,
+        //         'csrfmiddlewaretoken': '{{ csrf_token }}'
+        //     },
+        //     success: function(response) {
+        //         // Handle success response
+        //         console.log(response);
+        //     },
+        //     error: function(xhr, status, error) {
+        //         // Handle error response
+        //         console.log(xhr.responseText);
+        //     }
+        // });
+    
+    
+    
+
+
+</script>
+ 
+{% endblock %}  

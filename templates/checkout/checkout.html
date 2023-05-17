@@ -1,0 +1,265 @@
+{% extends "base/base.html" %}
+{% block head %}
+<style>
+    .checkout__order__product,
+    .checkout__order__total {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    .checkout__order__product th,
+    .checkout__order__product td,
+    .checkout__order__total th,
+    .checkout__order__total td {
+      padding: 8px;
+      text-align: left;
+      font-size: 16px;
+    }
+    
+    .checkout__order__product th {
+      background-color: #eee;
+      font-weight: bold;
+    }
+    
+    .checkout__order__product td img {
+      display: block;
+      margin: auto;
+    }
+    
+    .checkout__order__product td span {
+      display: block;
+      margin-top: 5px;
+    }
+    
+    .checkout__order__total td:nth-child(2) {
+      font-weight: bold;
+    }
+    
+    .site-btn {
+      display: block;
+      margin: auto;
+      padding: 10px 20px;
+      background-color: #0066cc;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .site-btn:hover {
+      background-color: #004d99;
+    }
+    </style>
+    
+    
+    
+{% endblock %}
+
+{% block offcanvas %}
+{% if flag %}
+    {% include "base/loggedin.html" %}
+    
+    {% else %}
+    {% include "base/loggedout.html" %}
+        
+    {% endif %}
+{% endblock %}
+    
+{% block navigation %}
+    
+{% if flag %}
+    
+{% include "base/loggedin.html" %}
+{% else %}
+{% include "base/loggedout.html" %}
+{% endif %} 
+    
+    
+{% endblock %}
+
+{% block content %}
+ <!-- Breadcrumb Begin -->
+ <div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                    <span>Check out</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+    <!-- Checkout Section Begin -->
+    <section class="checkout spad">
+        <div class="container">
+            <a href="{% url 'cartpage' %}" class="primary-btn" style="margin-bottom:50px;background-color: gray;"><i class="icon-copy fa fa-hand-o-left" aria-hidden="true"></i> Back to Cart</a>
+            <form action="#" class="checkout__form">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h5><i class="icon-copy fa fa-address-card-o" aria-hidden="true"></i> Addresses</h5>
+                        {% include "base/alerts.html" %}
+                        
+                        <div>
+                            {% for add in address %}
+                            <div class="card" style="width: 18rem;background-color: rgb(6, 61, 10);box-shadow:0cqmax; margin-bottom: 10px;">
+                                <div class="card-body">
+                                    {% if add.is_default %}
+                                  <i class="icon-copy fa fa-check-square" aria-hidden="true" style="color: white;float: right;"></i><p style="color:rgb(255, 255, 255);float: right; margin-right: 10px;" >default</p>
+                                    {% endif %}
+                                  <b><h6 style="color:rgb(255, 255, 255)" class="card-title">{{add.first_name}} {{add.last_name}}</h6></b>
+                                  <hr>
+                                  <u><b><h6 style="color:rgb(255, 255, 255)" class="card-subtitle mb-2 text-muted">Address</h6></b></u>
+                                  <p style="color:rgb(255, 255, 255)" class="card-text">{{add.address}},{{add.city}}</p>
+                                  <p style="color:rgb(255, 255, 255)" class="card-text">{{add.state}},{{add.Country}}</p>
+                                  <p style="color:rgb(255, 255, 255)" class="card-text">{{add.pincode}}</p>
+                                  <p style="color:rgb(255, 255, 255)" class="card-text">Email : {{add.email}}</p>
+                                  <p style="color:rgb(255, 255, 255)" class="card-text">Phone Number : {{add.phone}}</p>
+                                  {% if flag %}
+                                  <a href="{% url 'edit_address' add.uid %}" class="card-link" data-toggle="tooltip" title="Edit"><i style="color: white;" class="icon-copy fa fa-edit" aria-hidden="true"></i></a>
+                                  <a href="{% url 'delete_address' add.uid %}" class="card-link" data-toggle="tooltip" title="Delete"><i style="color: white;" class="icon-copy fa fa-trash" aria-hidden="true"></i></a>
+                                  {% else %} 
+                                 
+                                  <a href="{% url 'edit_session_address'  %}" class="card-link" data-toggle="tooltip" title="Edit"><i style="color: white;" class="icon-copy fa fa-edit" aria-hidden="true"></i></a>
+                                  <a href="{% url 'delete_session_address' %}" class="card-link" data-toggle="tooltip" title="Delete"><i style="color: white;" class="icon-copy fa fa-trash" aria-hidden="true"></i></a>
+
+                                  {% endif %}
+                                  {% if flag %}
+                                  <a href="#" style="float:right;" data-uid="{{add.uid}}" class="card-link add" data-toggle="tooltip" title="select address"><i class="icon-copy fa fa-plus-circle" style="color: white;float: right;" aria-hidden="true"></i></a>
+                                {% endif %}
+                                </div>
+                              
+                              </div>
+                              {% endfor %}
+                        </div>
+                        
+                        <hr>
+                        {% if flag  %}
+                        <a>
+                            <a href="{% url 'add_address' %}"><button type="button" class="btn btn-info"><span><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add address <i class="icon-copy fa fa-address-book" aria-hidden="true"></i></span></button></a>
+                        </a>
+                        {% else %}
+                        {% if not address %}
+                        <a href="{% url 'add_address' %}"><button type="button" class="btn btn-info"><span><i class="icon-copy fa fa-plus" aria-hidden="true"></i> Add address <i class="icon-copy fa fa-address-book" aria-hidden="true"></i></span></button></a>
+                          
+                        {% endif %}
+                        {% endif %}
+                        <hr>
+                        <br>
+                    
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="checkout__order">
+                                <h5>Your order</h5>
+                                <table class="checkout__order__product">
+                                    <thead>
+                                      <tr>
+                                        <th></th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for item in items %}
+                                      <tr>
+                                        <td>
+                                          <img style="width: 50px;height: 50px;" src="/media/{{item.product.product_images.first.img}}">
+                                        </td>
+                                        <td>
+                                          <span>{{item.product.name}}</span>
+                                        </td>
+                                        <td>{{item.quantity}}</td>
+                                        <td>₹{{item.get_total}}</td>
+                                      </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  </table>
+                                  
+                                  <table class="checkout__order__total">
+                                    <tbody>
+                                      {% if flag %}
+                                      <tr>
+                                        <td>Subtotal</td>
+                                        <td>₹{{order.get_original_cart_total}}</td>
+                                      </tr>
+                                      <tr>
+                                        <td>Coupon Discount</td>
+                                        <td>-₹{{order.get_discount}}</td>
+                                      </tr>
+                                      <tr>
+                                        <td>Offer Discount</td>
+                                        <td>-₹{{order.get_total_offer_discount}}</td>
+                                      </tr>
+                                      {% endif %}
+                                      <tr>
+                                        <td>Total</td>
+                                        <td>₹{{order.get_grand_total}}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                  
+                                  <a href="{% url 'paymentpage' %}"><button type="button" class="site-btn">Continue</button></a>
+                                  
+                        
+                    </div>
+                </form>
+            </div>
+        </section>
+        <!-- Checkout Section End -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    var updates = document.getElementsByClassName('add');
+    var address_uid = null;
+    for (var i = 0; i < updates.length; i++) {
+        updates[i].addEventListener('click', function() {
+            // Change all icons back to plus circle
+            $('.add i').removeClass('fa-check-square-o').addClass('fa-plus-circle');
+            // Change the clicked icon to check square
+            $(this).find('i').removeClass('fa-plus-circle').addClass('fa-check-square-o');
+            var address_uid = this.dataset.uid; // get the address ID from the data attribute
+            console.log(address_uid);
+            updateshippingaddress(address_uid)
+        });
+    }
+    function updateshippingaddress(address_uid){
+      var url = '/update-shippingaddress/'
+      fetch(url,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'X-CSRFToken' : csrftoken,
+        },
+        body:JSON.stringify({
+          'address_uid':address_uid,
+        })
+      })
+      .then((response) =>{
+        return response.json()
+      })
+      .then((data) =>{
+        console.log('data:',data)
+        alertify.alert().setting({
+          'message': JSON.stringify(data),
+            'basic': true,
+            'modal': true,
+            'closable': true,
+            'transition': 'fade',
+            'title': '',
+            'labels': {
+                ok: 'OK'
+            },
+            'className': 'my-alert'
+            }).show();
+        })
+      }
+    
+</script>
+
+        
+
+{% endblock %}

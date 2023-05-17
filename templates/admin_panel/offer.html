@@ -1,0 +1,276 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}Coupons{% endblock %}
+{% block head %} 
+<style>
+    .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container.btn {
+  background-color: rgb(0, 180, 137);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.hidden{
+	display: none!important;
+}
+
+.container.btn:hover {
+  background-color: #00b087;
+}
+
+@media screen and (max-width: 768px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="card-box pb-10">
+	<div class="h5 pd-20 mb-0"></div>
+  
+<div class="table-responsive">
+    <div class="header-search m-2 input-group">
+        <form method="get">
+            <div style="width: 200%;margin:10px" class="form-group mb-0 mt-2 input-group-prepend ">
+                <input
+                    type="search"
+                    required
+                    name="searchkey"
+                    class="form-control search-input"
+                    placeholder="Search Here"
+                    id="offer_list"
+                />
+                <button style="background-color:rgb(11, 11, 14);color:white" type="submit" class="input-group-text btn btn-warning" ><i class="icon-copy fa fa-search" aria-hidden="true"></i></button>
+            </div>
+        </form>
+    </div>
+	<table style="margin:16px;width:98%;" class="table-striped table nowrap">
+		<thead>
+           <h4 class='text-center'> Offers<h4>
+			<tr>
+          <th scope="col">No.</th> 
+          <th scope="col">Name</th>
+          <th scope="col">Discount</th>
+          <th scope="col">Is Active</th>
+          <th scope="col">  
+          </th>
+          <th scope="col"></th>
+</tr>
+		</thead>
+		<tbody>
+			{% for i in offers %}
+            <tr class="coupon-row">
+                <th>{{forloop.counter}}</th>
+                <th><input type="text" name="offer_name" value="{{i.name}}"></th>
+                <th><input type="number" name="offer_discount" value="{{i.discount}}"></th>
+                <td>{% if i.active %}<p style="color:green">Active</p>{% else %}<p style="color: red;">Expired</p>{% endif %}
+                
+                <label class="switch">
+                {% if i.active %}
+                <input type="checkbox" name="is_active" checked>
+
+                {% else %}
+                <input type="checkbox" name="is_active" >
+
+                {% endif %}
+                <span class="slider round"></span>
+                </label>
+                </td>
+                <td>
+                <a href="{% url 'offer_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                <i class="icon-copy bi bi-trash"></i>
+                </td>
+            <td>
+            <button type="button" style="margin: 7px;" class="btn btn-outline-primary btn-sm save-btn" data-uid="{{ i.uid }}">Save</button>
+            </td>
+            </tr>
+                          
+            {% endfor%}	
+		</tbody>
+	</table></div>
+    <div style="margin:30px" class="p-2 float-right">
+        <button id="addbtn" type="button" class="btn btn-primary" style="margin:10px;">
+            Add New Coupon
+        </button>
+</div>
+
+<hr>
+<div class="container hidden" id="form-container" >
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <h4>Offers</h4>
+        </div>
+    </div>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label for="coupon_code">Offer Name</label>
+                    {{ form.name }}
+                    {% if form.errors.name %}
+                    <label class="text-danger">{{ form.errors.name }}</label>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="is_active">Status</label>
+                    {{ form.is_active }}
+                    {% if form.errors.is_active %}
+                    <label class="text-danger">{{ form.errors.is_active }}</label>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label for="discount_price">Discount</label>
+                    {{ form.discount }}
+                    {% if form.errors.discount %}
+                    <label class="text-danger">{{ form.errors.discount }}</label>
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="toggleForm()">Submit</button>
+    </form>
+</div>
+{% if offers.has_other_pages %}
+    <div class="pagination">
+        {% if offers.has_previous %}
+            <a href="?page=1" class="page-link">&laquo; First</a>
+            <a href="?page={{ offers.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+        {% endif %}
+
+        {% for i in offers.paginator.page_range %}
+            {% if offers.number == i %}
+                <span class="page active">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if offers.has_next %}
+            <a href="?page={{ offers.next_page_number }}" class="page-link">Next &rsaquo;</a>
+            <a href="?page={{ offers.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+    $('#addbtn').on('click', function() {
+        document.getElementById('addbtn').classList.add('hidden')
+        document.getElementById('form-container').classList.remove('hidden')
+    });
+    $('.save-btn').on('click', function() {
+        var offeruid = $(this).data('uid');
+        var offername = $(this).closest("tr").find("input[name='offer_name']").val();
+        var discount = $(this).closest("tr").find("input[name='offer_discount']").val();
+        var active = $(this).closest("tr").find("input[name='is_active']").is(":checked");
+        console.log(offeruid,offername,discount,active)
+        console.log(csrftoken)
+        update_offer(offeruid,offername,discount,active)
+    });
+    
+
+  });
+  function update_offer(offeruid,offername,discount,active){
+        var url='/update-offer/'
+        fetch(url,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRFToken' : csrftoken, 
+            },
+            
+            body:JSON.stringify({
+                'offeruid':offeruid,
+                'offername':offername,
+                'discount':discount,
+                'active':active,
+            })
+        })
+        .then((response) =>{
+        return response.json()
+      })
+      .then((data) =>{
+        console.log('data:',data)
+        location.reload()
+        alertify.alert().setting({
+          'message': JSON.stringify(data),
+            'basic': true,
+            'modal': true,
+            'closable': true,
+            'transition': 'fade',
+            'title': '',
+            'labels': {
+                ok: 'OK'
+            },
+            'className': 'my-alert'
+            }).show();
+        })
+    }
+   
+</script>
+{% endblock %}  
+{% block script %}
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+  var availableTags = [];
+  $.ajax({
+      method: "GET",
+      url:"/admin-panel-offers",
+      success: function(response){
+          startAutocomplete(response)
+      }
+
+  });
+  function startAutocomplete(availableTags)
+  {
+      $( "#offer_list" ).autocomplete({
+      source: availableTags,
+      maxResults: 5
+  });
+  }
+  
+</script>  
+{% endblock %}

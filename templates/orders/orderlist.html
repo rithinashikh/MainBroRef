@@ -1,0 +1,186 @@
+{% extends "base/base.html" %}
+    
+{% block offcanvas %}
+{% if flag %}
+    {% include "base/loggedin.html" %}
+    
+    {% else %}
+    {% include "base/loggedout.html" %}
+        
+    {% endif %}
+{% endblock %}
+    
+{% block navigation %}
+    
+{% if flag %}
+    
+{% include "base/loggedin.html" %}
+{% else %}
+{% include "base/loggedout.html" %}
+{% endif %} 
+    
+    
+{% endblock %}
+
+
+{% block content %}
+   <!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                    <span>Your orders</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+    <!-- Shop Cart Section Begin -->
+    <hr>
+    <section class="shop-cart spad">
+       
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    
+                    <div class="shop__cart__table">
+                        <table class="order_table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date of order</th>
+                                    <th>Delivery date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Mode of Payment</th>
+                                    <th>Order Summary</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               
+                                {% for order in orders %}
+                                    
+                                <tr>
+                                    <td class="cart__product__item">
+                                        {{order.transaction_id}}
+                                        
+                                    </td>
+                                    <td class="cart__product__item">
+                                        {{order.date_ordered}}
+                                        
+                                    </td>
+                                    <td class="cart__product__item">
+                                        {{order.delivery_date}}
+                                        
+                                    </td>
+                                    <td class="cart__price">₹{{order.get_grand_total}} </td>
+                                    
+                                    <td class="cart__quantity">
+                                        {% if order.status == 'canceled' %}
+                                        <h6 style="color:red;">{{ order.status }}</h6>
+                                        {% elif order.status == 'returned' %}
+                                        <h6 style="color:rgb(76, 0, 255);">{{ order.status }}</h6>
+
+                                    {% else %}
+                                        <h6 style="color:green;">{{ order.status }}</h6>
+                                    {% endif %}
+                                    </td>
+                                    <td class="cart__total text-center">{{order.payment_method}}</td>
+                                    <td class="cart__total text-center"><a href="{% url 'order_summary' order.uid  %}"><button type="button" class="btn btn-outline-success">
+										View
+									</button></td></a>
+                                    {% if order.status == 'delivered' %}
+                                    <td class="cart__close text-center"><a href="{% url 'return_order' order.uid %}" data-toggle="tooltip" title="Return order"><button type="button" class="btn btn-outline-danger return_button">
+										Return
+									</button></a></td>
+                                    {% else %}
+                                    <td class="cart__close text-center"><a href="{% url 'cancel_order' order.uid %}" data-toggle="tooltip" title="Cancel order"><button type="button" class="btn btn-outline-warning cancel_button">
+										Cancel
+									</button></a></td>
+                                  {% endif %}
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% if orders.has_other_pages %}
+                    <div class="pagination">
+                        {% if orders.has_previous %}
+                            <a href="?page=1" class="page-link">&laquo; First</a>
+                            <a href="?page={{ orders.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+                        {% endif %}
+        
+                        {% for i in orders.paginator.page_range %}
+                            {% if orders.number == i %}
+                                <span class="page active">{{ i }}</span>
+                            {% else %}
+                                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                            {% endif %}
+                        {% endfor %}
+        
+                        {% if orders.has_next %}
+                            <a href="?page={{ orders.next_page_number }}" class="page-link">Next &rsaquo;</a>
+                            <a href="?page={{ orders.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="cart__btn mt-5 ">
+                        <a href="{% url 'homepage' %}">Continue Shopping</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    
+                </div>
+            </div>
+           
+        </div>
+    </section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+ $(document).ready(function() {
+
+// hiding the buttons
+$('.return_button').hide();
+$('.cancel_button').show();
+
+$('.order_table tbody tr').each(function() {
+    var _status=$(this).find('td:eq(4)').text().trim();
+    var cancelBtn=$(this).find('.cancel_button');
+    var returnBtn=$(this).find('.return_button');
+
+    console.log(_status,cancelBtn,returnBtn)
+    if (_status=== 'canceled'){
+        cancelBtn.hide();
+    }
+    else if (_status === 'delivered'){
+        console.log('delivered')
+        // cancelBtn.replaceWith(returnBtn);
+        cancelBtn.hide();
+        returnBtn.show();
+    }else if (_status === 'returned'){
+        cancelBtn.hide();
+        returnBtn.hide();
+    }else if (_status === 'refunded'){
+        cancelBtn.hide();
+        returnBtn.hide();
+    }else{
+        console.log('else is worked')
+    }
+});
+
+
+
+ });
+</script>
+
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}Coupons{% endblock %}
+{% block head %} 
+<style>
+    .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container.btn {
+  background-color: rgb(0, 180, 137);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.hidden{
+	display: none!important;
+}
+
+.container.btn:hover {
+  background-color: #00b087;
+}
+
+@media screen and (max-width: 768px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="card-box pb-10">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="header-search m-2 input-group">
+    <form method="get">
+        <div style="width: 200%;padding-left:15px" class="form-group mb-0 mt-2 input-group-prepend ">
+            <input
+                type="search"
+                required
+                name="searchkey"
+                class="form-control search-input"
+                placeholder="Search Here"
+                id="coupons_list"
+            />
+            <button style="background-color:rgb(11, 11, 14);color:white" type="submit" class="input-group-text btn btn-warning" ><i class="icon-copy fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </form>
+</div>
+<div class="table-responsive">
+	<table style="width:95%;margin:25px" class="table-striped table nowrap">
+		<thead>
+           <h4 class='text-center'> Coupons<h4>
+			<tr>
+          <th scope="col">No.</th> 
+          <th scope="col">Coupon Code</th>
+          <th scope="col">Description</th>
+          <th scope="col">Discount</th>
+          <th scope="col">Minimum Amount</th>
+          <th scope="col">Is Expired</th>
+          <th scope="col">  
+          </th>
+          <th scope="col"></th>
+</tr>
+		</thead>
+		<tbody>
+			{% for i in coupons %}
+                        <tr class="coupon-row">
+                          <th>{{forloop.counter}}</th>
+                            <th><input type="text" name="coupon_code" value="{{i.coupon_code}}"></th>
+                            <th><input type="text" name="description" value="{{i.description}}"></th>
+                            <th><input type="number" name="discount_price" value="{{i.discount_price}}"></th>
+                            <th><input type="number" name="minimum_amount" value="{{i.minimum_amount}}"></th>
+                            <td>{% if i.is_expired %}<p style="color: red;">Expired</p>{% else %}<p style="color:green">Active</p>{% endif %}
+                            
+                                <label class="switch">
+                                  {% if i.is_expired %}
+                                    <input type="checkbox" name="is_expired" checked>
+                                  {% else %}
+                                    <input type="checkbox" name="is_expired">
+                                  {% endif %}
+                                  <span class="slider round"></span>
+                                </label>
+                              </td>
+                            <td>
+                               
+                             <a href="{% url 'coupon_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                                <i class="icon-copy bi bi-trash"></i>
+                           </td>
+                        <td>
+                        <button type="button" style="margin: 7px;" class="btn btn-outline-primary btn-sm save-btn" data-uid="{{ i.uid }}">Save</button>
+                       </td>
+                          </tr>
+                          
+                        {% endfor%}	
+		</tbody>
+	</table></div>
+    <div style="margin:40px" class="p-2 float-right">
+        <button id="addbtn" type="button" class="btn btn-primary" style="margin:10px;">
+            Add New Coupon
+        </button>
+</div>
+
+<hr>
+<div class="container hidden" id="form-container" >
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <h4>Coupons</h4>
+        </div>
+    </div>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label for="coupon_code">Coupon Code</label>
+                    {{ form.coupon_code }}
+                    {% if form.errors.coupon_code %}
+                    <label class="text-danger">{{ form.errors.coupon_code }}</label>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    {{ form.description }}
+                    {% if form.errors.description %}
+                    <label class="text-danger">{{ form.errors.description }}</label>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="is_expired">Status</label>
+                    {{ form.is_expired }}
+                    {% if form.errors.is_expired %}
+                    <label class="text-danger">{{ form.errors.is_expired }}</label>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label for="discount_price">Discount Price</label>
+                    {{ form.discount_price }}
+                    {% if form.errors.discount_price %}
+                    <label class="text-danger">{{ form.errors.discount_price }}</label>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="minimum_amount">Minimum Amount</label>
+                    {{ form.minimum_amount }}
+                    {% if form.errors.minimum_amount %}
+                    <label class="text-danger">{{ form.errors.minimum_amount }}</label>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="toggleForm()">Submit</button>
+    </form>
+</div>
+{% if coupons.has_other_pages %}
+    <div class="pagination">
+        {% if coupons.has_previous %}
+            <a href="?page=1" class="page-link">&laquo; First</a>
+            <a href="?page={{ coupons.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+        {% endif %}
+
+        {% for i in coupons.paginator.page_range %}
+            {% if coupons.number == i %}
+                <span class="page active">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if orders.has_next %}
+            <a href="?page={{ coupons.next_page_number }}" class="page-link">Next &rsaquo;</a>
+            <a href="?page={{ coupons.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+    $('#addbtn').on('click', function() {
+        document.getElementById('addbtn').classList.add('hidden')
+        document.getElementById('form-container').classList.remove('hidden')
+    });
+    $('.save-btn').on('click', function() {
+        var couponuid = $(this).data('uid');
+        var couponCode = $(this).closest("tr").find("input[name='coupon_code']").val();
+        var description = $(this).closest("tr").find("input[name='description']").val();
+        var discountPrice = $(this).closest("tr").find("input[name='discount_price']").val();
+        var minimumAmount = $(this).closest("tr").find("input[name='minimum_amount']").val();
+        var isExpired = $(this).closest("tr").find("input[name='is_expired']").is(":checked");
+        console.log(couponuid,couponCode,description,discountPrice,minimumAmount,isExpired)
+        console.log(csrftoken)
+        update_coupon(couponuid,couponCode,description,discountPrice,minimumAmount,isExpired)
+    });
+    
+
+  });
+  function update_coupon(couponuid,couponCode,description,discountPrice,minimumAmount,isExpired){
+        var url='/update-coupon/'
+        fetch(url,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRFToken' : csrftoken, 
+            },
+            
+            body:JSON.stringify({
+                'couponuid':couponuid,
+                'couponCode':couponCode,
+                'description':description,
+                'discountPrice':discountPrice,
+                'minimumAmount':minimumAmount,
+                'isExpired':isExpired,
+
+            })
+        })
+        .then((response) =>{
+        return response.json()
+      })
+      .then((data) =>{
+        console.log('data:',data)
+        location.reload()
+        alertify.alert().setting({
+          'message': JSON.stringify(data),
+            'basic': true,
+            'modal': true,
+            'closable': true,
+            'transition': 'fade',
+            'title': '',
+            'labels': {
+                ok: 'OK'
+            },
+            'className': 'my-alert'
+            }).show();
+        })
+    }
+   
+</script>
+{% endblock %}  
+{% block script %}
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+  var availableTags = [];
+  $.ajax({
+      method: "GET",
+      url:"/admin-panel-coupons",
+      success: function(response){
+          startAutocomplete(response)
+      }
+
+  });
+  function startAutocomplete(availableTags)
+  {
+      $( "#coupons_list" ).autocomplete({
+      source: availableTags,
+      maxResults: 5
+  });
+  }
+  
+</script>  
+{% endblock %}

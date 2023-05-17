@@ -1,0 +1,213 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}Variants{% endblock %}
+{% block content %}
+
+<div class="card-box pb-10">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="table-responsive">
+	<table style="width:97%" class="table-striped table nowrap m-4">
+		<thead>
+           <h4 class='text-center'> Brands<h4>
+			<tr>
+          <th scope="col">No.</th> 
+          <th scope="col">Name</th>
+          <th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in brands %}
+        <tr>
+          <th>{{forloop.counter}}</th>
+          
+            <th >{{i.name}}</th>
+            
+            <td><a href="{% url 'brand_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+                <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+            </a>
+          
+              <a href="{% url 'brand_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                <i class="icon-copy bi bi-trash"></i>
+                
+                
+            </td>
+          </tr>
+                          
+          {% endfor%}	
+		</tbody>
+	</table></div>
+</div>
+<div class="p-2 float-right">
+    <a href="{% url 'add_brands' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        </i> Add New brand
+    </button></a>
+    </div>
+    <hr>
+    
+  <!-- end of brand -->
+<div class="card-box pb-10 " style="margin-top: 50px;">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="table-responsive">
+	<table style="width:105%" class="table-striped table nowrap m-4">
+		<thead>
+           <h4 class='text-center'> Colors<h4>
+			<tr>
+        <th scope="col">No.</th> 
+        <th scope="col">Name</th>
+        <th scope="col">Extra Price</th>
+        <th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in colors %}
+        <tr>
+          <th>{{forloop.counter}}</th>
+          
+            <th >{{i.name}}</th>
+            <td><a href="{% url 'color_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+                <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+            </a>
+            
+              <a href="{% url 'color_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                <i class="icon-copy bi bi-trash"></i>
+                
+                
+            </td>
+          </tr>
+          
+        {% endfor%}	
+		</tbody>
+	</table></div>
+</div>
+<div class="p-2 float-right m-2">
+    <a href="{% url 'add_color' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        </i> Add New color
+    </button></a>
+    </div>  
+
+    <!-- color end  -->
+
+    <div style="margin-top:80px;" class="card-box pb-10 mt-6 " style="margin-top: 50px;">
+        <div class="h5 pd-20 mb-0"></div>
+        <div class="table-responsive">
+        <table style="width: 96%;" class="table-striped table nowrap m-4">
+            <thead>
+               <h4 class='text-center'> Sizes<h4>
+                <tr>
+                  <th scope="col">No.</th> 
+                  <th scope="col">Sizes</th>
+                  <th scope="col">Extra Price</th>
+                  <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in sizes %}
+                <tr>
+                  <th>{{forloop.counter}}</th>
+                  
+                    <th >{{i.name}}</th>
+                    <th >{{i.price}}</th>
+                    <td><a href="{% url 'size_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+                        <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+                    </a>
+                      <a href="{% url 'size_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                        <i class="icon-copy bi bi-trash"></i>
+                                                            
+                    </td>
+                  </tr>
+                  
+                {% endfor%}	
+            </tbody>
+        </table></div>
+    </div>
+    <div class="p-2 float-right my-3">
+        <a href="{% url 'add_size' %}">
+        <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+            </i> Add New size
+        </button></a>
+        </div>  
+<!-- size end -->
+<div class="card-box pb-10 " style="margin-top: 80px;">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="table-responsive">
+	<table style="width: 96%;" class="table-striped table nowrap m-4">
+		<thead>
+           <h4 class='text-center'> Age categories for kids<h4>
+			<tr>
+          <th scope="col">No.</th> 
+          <th scope="col">Name</th>
+          <th scope="col">Extra Price</th>
+          <th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in by_age %}
+        <tr>
+          <th>{{forloop.counter}}</th>
+          
+            <th >{{i.name}}</th>
+            <th >{{i.price}}</th>
+            <td><a href="{% url 'age_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+              <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+          </a>
+          
+            <a href="{% url 'age_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" >
+              <i class="icon-copy bi bi-trash"></i>
+                                                
+            </td>
+          </tr>
+          
+        {% endfor%}	
+		</tbody>
+	</table></div>
+</div>
+<div class="p-2 float-right my-2">
+    <a href="{% url 'add_age' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        </i> Add New 
+    </button></a>
+    </div>
+ <!-- by_age ends -->
+
+ <div class="card-box pb-10 " style="margin-top:80px;">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="table-responsive">
+	<table style="width: 96%;" class="table-striped table nowrap m-4">
+		<thead>
+           <h4 class='text-center'> Tags Available<h4>
+			<tr>
+          <th scope="col">No.</th> 
+          <th scope="col">Tag name</th>
+          <th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in tags %}
+      <tr>
+        <th>{{forloop.counter}}</th>
+        
+          <th >{{i.name}}</th>
+          
+          <td><a href="{% url 'tag_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+              <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+          </a>
+        
+            <a href="{% url 'tag_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+              <i class="icon-copy bi bi-trash"></i>
+              
+          </td>
+        </tr>
+        
+      {% endfor%}	
+		</tbody>
+	</table></div>
+</div>
+<div class="p-2 float-right my-3 mb-3">
+    <a href="{% url 'add_tag' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        </i> Add New Tag
+    </button></a>
+    </div>  
+{% endblock %}  

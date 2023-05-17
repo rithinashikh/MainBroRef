@@ -1,0 +1,112 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}categories{% endblock %}
+{% block content %}
+
+<div class="card-box pb-10">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="header-search m-2 input-group">
+    <form method="get">
+        <div style="width: 200%;" class="form-group mb-0 mt-2 input-group-prepend ">
+            <input
+                type="search"
+                required
+                name="searchkey"
+                class="form-control search-input"
+                placeholder="Search Here"
+                id="category_list"
+            />
+            <button style="background-color:rgb(11, 11, 14);color:white" type="submit" class="input-group-text btn btn-warning" ><i class="icon-copy fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </form>
+</div>
+<div class="table-responsive">
+	<table style="margin:10px;width: 104%;" class="table-striped table nowrap">
+		<thead>
+           <h4 class='text-center'> Categories<h4>
+			<tr>
+        <th scope="col">No.</th> 
+        <th scope="col">Name</th>
+        <th scope="col">Image</th>
+        <th scope="col">Description</th>
+        <th scope="col">Status</th>
+        <th scope="col">  
+        </th>
+        <th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in categories %}
+        <tr>
+          <th>{{forloop.counter}}</th>
+          
+            <th >{{i.name}}</th>
+            <th ><img style="width: 100px; height: 100px;" src="/media/{{i.img}}"></th>
+            <th >{{i.description}}</th>
+            <td>{% if i.status %}<p style="color:green">Active</p>{% else %}<p style="color: red;">Hidden</p>{% endif %}</td>
+            <td><a href="{% url 'category_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+                <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+            </a>
+            
+              <a href="{% url 'Category_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                <i class="icon-copy bi bi-trash"></i>
+                
+                
+            </td>
+        </tr>
+          
+      {% endfor%}	
+		</tbody>
+	</table></div>
+</div>
+{% if categories.has_other_pages %}
+    <div class="pagination">
+        {% if categories.has_previous %}
+            <a href="?page=1" class="page-link">&laquo; First</a>
+            <a href="?page={{ categories.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+        {% endif %}
+
+        {% for i in categories.paginator.page_range %}
+            {% if categories.number == i %}
+                <span class="page active">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if categories.has_next %}
+            <a href="?page={{ categories.next_page_number }}" class="page-link">Next &rsaquo;</a>
+            <a href="?page={{ categories.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+        {% endif %}
+    </div>
+{% endif %}
+<div class="p-2 float-right">
+    <a href="{% url 'add_category' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        </i> Add New 
+    </button></a>
+    </div>
+
+{% endblock %}  
+{% block script %}
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+  var availableTags = [];
+  $.ajax({
+      method: "GET",
+      url:"/admin-panel-category",
+      success: function(response){
+          startAutocomplete(response)
+      }
+
+  });
+  function startAutocomplete(availableTags)
+  {
+      $( "#category_list" ).autocomplete({
+      source: availableTags,
+      maxResults: 5
+  });
+  }
+  
+</script>  
+{% endblock %}

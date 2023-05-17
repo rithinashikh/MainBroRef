@@ -1,0 +1,302 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}Customers{% endblock %}
+
+{% block head %}
+<style>
+    .sidebar {
+      background-color: ghostwhite;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+  
+    .profile {
+      background-color: ghostwhite;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+  
+    .profile-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+  
+    .avatar-photo {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  
+    .profile-name {
+      font-size: 24px;
+      margin: 10px 0;
+    }
+  
+    .profile-title {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+  
+    .contact-info {
+      font-family: Arial, sans-serif;
+      color: #333;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+      margin-top: 30px;
+    }
+  
+    .contact-info-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+  
+    .contact-info ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+  
+    .contact-info ul li {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+  
+    .contact-info ul li:last-child {
+      border-bottom: none;
+    }
+  
+    .contact-info ul li span {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+  
+    .my-profile {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.my-profile__title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.my-profile__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.my-profile__item {
+  margin-bottom: 10px;
+}
+
+.my-profile__link {
+  display: block;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.my-profile__link:hover {
+  background-color: #ddd;
+}
+
+    .profile-photo {
+  position: relative;
+}
+
+.upload-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 10px;
+}
+
+.upload-icon label {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.upload-icon label i {
+  font-size: 16px;
+  line-height: 30px;
+  color: #333;
+}
+
+.upload-icon input[type="file"] {
+  display: none;
+}
+.form-group label{
+    font-weight: 600;
+}
+
+
+  </style>
+{% endblock %}
+
+{% block content %}
+<div >
+
+    <div >
+        <div >
+            
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30 sidebar">
+                    <div class=" profile pd-20 card-box height-10-p">
+                      <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="profile-photo">
+                          {% if user.image %}
+                            <img id="profile-image" src="/media/{{user.image}}" alt="" class="avatar-photo" />
+                          {% else %}
+                            <img id="profile-image" src="/media/img/profile.png" alt="" class="avatar-photo" />
+                          {% endif %}
+                          <div class="upload-icon">
+                            <label for="image-upload">
+                              <i class="icon-copy fa fa-camera" aria-hidden="true"></i>
+                            </label>
+                            <input id="image-upload" type="file" name="image" accept="image/*">
+                          </div>
+                          
+                        </div>
+                      </form>
+                      
+                          <h5 class="profile-name">{{user.first_name}} {{user.last_name}}</h5>
+                        </div>
+                        <div class="contact-info">
+                            <h5 class="contact-info-title">Contact Information</h5>
+                            <ul>
+                              <li>
+                                <span>Email Address:</span>
+                                {{user.email}}
+                              </li>
+                              <li>
+                                <span>Phone Number:</span>
+                                {{user.mobile}}
+                              </li>
+                              
+                            </ul>
+                          </div>
+                          
+                          <nav class="my-profile">
+                            <h2 class="my-profile__title">Profile</h2>
+                            <ul class="my-profile__list">
+                              <li class="my-profile__item"><a href="{% url 'admin_profile' %}" class="my-profile__link">Edit Personal Information</a></li>
+                              <li class="my-profile__item"><a href="{% url 'admin_bank' %}" class="my-profile__link">Manage Bank Account Details</a></li>
+                              <li class="my-profile__item"><a href="{% url 'security_settings' %}" class="my-profile__link">Privacy Settings</a></li>
+                            </ul>
+                          </nav>
+                          
+                          
+                          
+                </div>
+                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mb-30">
+                    <div class="profile-setting" style="padding-left: 20px;">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <ul>
+                                <li style="list-style: none;" class="weight-500 col-md-8">
+                                    <h4 class="text-center ,mt-4, mb-4" style="
+                                        padding: 25px;color:brown;font-weight: 600;
+                                    ">
+                                        Edit Personal Information
+                                    </h4>
+                                    <hr>
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        {{profile_form.first_name}}
+                                        {% if profile_form.errors.first_name %}
+                                        <label for="" class="text-danger">{{profile_form.errors.first_name}}</label>
+                                        {% endif %}
+                
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        {{profile_form.last_name}}
+                                        {% if profile_form.errors.last_name %}
+                                        <label for="" class="text-danger">{{profile_form.errors.last_name}}</label>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        {{profile_form.email}}
+                                        {% if profile_form.errors.email %}
+                                        <label for="" class="text-danger">{{profile_form.errors.email}}</label>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Mobile No</label>
+                                        {{profile_form.mobile}}
+                                        {% if profile_form.errors.mobile %}
+                                        <label for="" class="text-danger">{{profile_form.errors.mobile}}</label>
+                                        {% endif %}
+                                    </div>
+                
+                                    
+                                    <div class="form-group mb-4">
+                                        <button type="submit" class="btn btn-info btn-md" >Update</button>
+                                    </div>
+                                </li>
+                
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+                
+              
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  const profileImage = document.getElementById('profile-image');
+  const imageUpload = document.getElementById('image-upload');
+
+  imageUpload.addEventListener('change', () => {
+    const file = imageUpload.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    fetch('/update-admin-profile/', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken' : csrftoken,
+      }
+    })
+      .then(response => response.json())
+      
+      .then(data => {
+        profileImage.src = `/media/${data.image}`;
+        location.reload(); 
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  });
+</script>
+
+{% endblock %}

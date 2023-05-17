@@ -1,0 +1,133 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}Customers{% endblock %}
+{% block content %}
+
+<div class="card-box pb-10">
+  <div style="padding:10px" class="header-search m-2 input-group">
+    <form method="get">
+        <div style="width: 200%;" class="form-group mb-0 mt-2 input-group-prepend ">
+            <input
+                type="search"
+                required
+                name="searchkey"
+                class="form-control search-input"
+                placeholder="Search Here"
+                id="customers_list"
+            />
+            <button style="background-color:rgb(11, 11, 14);color:white" type="submit" class="input-group-text btn btn-warning" ><i class="icon-copy fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </form>
+</div>
+	<div class="h5 pd-20 mb-0">Customers List</div>
+    <div class="table-responsive">
+	<table style="margin: 20px;" class="table-striped table nowrap">
+		<thead>
+			<tr>
+                
+                    <th scope="col">No.</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Firstname</th>
+                    <th scope="col">Lastname</th>
+                    <th scope="col">Joined On</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">PhoneNumber</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">  
+                    </th>
+                    <th scope="col"></th>
+                
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in users %}
+                        <tr>
+                          <th>{{forloop.counter}}</th>
+                            <th scope="row">{{i.id}}</th>
+                            <td>{{i.first_name}}</td>
+                            <td>{{i.last_name}}</td>
+                            <td>{{i.last_login_time}}</td>
+                            <td>{{i.email}}</td>
+                            <td>{{i.mobile}}</td>
+                            <td>{% if i.is_blocked %}<p style="color:red">blocked</p>{% else %}<p style="color: green;">Active</p>{% endif %}</td>
+                            <td><a href="{% url 'Customer_update' i.id %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+                                <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+                            </a>
+                           
+                             <a href="{% url 'Customer_delete' i.id %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                                <i class="icon-copy bi bi-trash"></i>
+                                <div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body text-center font-10">
+                                                
+                                                    <p>Are you sure you want to delete this item?</p>
+                                                    <div class="modal-buttons">
+                                                      <a href="{% url 'Customer_delete' i.id %}" type="button" class="btn btn-outline-danger btn-sm">Delete</a>
+                                                      <button class="btn btn-dark btn-sm" type="submit" name="cancel-delete">Cancel</button>
+                                                    </div>
+                                                  </form>
+                                            </div>   
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                           </td>
+                          </tr>
+                          
+                        {% endfor%}
+			
+				
+		</tbody>
+	</table></div>
+</div>
+{% if users.has_other_pages %}
+    <div class="pagination">
+        {% if users.has_previous %}
+            <a href="?page=1" class="page-link">&laquo; First</a>
+            <a href="?page={{ users.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+        {% endif %}
+
+        {% for i in users.paginator.page_range %}
+            {% if users.number == i %}
+                <span class="page active">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if orders.has_next %}
+            <a href="?page={{ users.next_page_number }}" class="page-link">Next &rsaquo;</a>
+            <a href="?page={{ users.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+        {% endif %}
+    </div>
+{% endif %}
+<div style="margin:26px" class="p-2 float-right">
+    <a href="{% url 'add_customer' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        <i class="icon-copy bi bi-person-plus-fill"></i> Add Customer
+    </button></a>
+    </div>
+{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+  var availableTags = [];
+  $.ajax({
+      method: "GET",
+      url:"/admin-panel-customers",
+      success: function(response){
+          startAutocomplete(response)
+      }
+
+  });
+  function startAutocomplete(availableTags)
+  {
+      $( "#customers_list" ).autocomplete({
+      source: availableTags,
+      maxResults: 5
+  });
+  }
+  
+</script>  
+{% endblock %}

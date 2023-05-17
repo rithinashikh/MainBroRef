@@ -1,0 +1,149 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}update product details{% endblock %}
+{% block content %}
+<div class="signup-form">
+    <form action="" method="post" enctype="multipart/form-data" >
+        {% csrf_token %}
+        {% include "base/alerts.html" %}
+
+		<h2 class="text-center">Update Product details</h2>
+		<p class="text-center">Update details here!!</p>
+		<hr>
+        <div class="form-group">
+            <label for = " ">Product Name</label>
+            {{form.name}}
+            {% if form.errors.name %}
+                <label for="" class="text-danger">{{form.errors.name}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Brand Name</label>
+            {{form.brand}}
+            {% if form.errors.brand %}
+                <label for="" class="text-danger">{{form.errors.brand}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">section</label>
+            {{form.section}}
+            {% if form.errors.section %}
+                <label for="" class="text-danger">{{form.errors.section}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Sub Section</label>
+            {{form.Sub_group}}
+            {% if form.errors.Sub_group %}
+                <label for="" class="text-danger">{{form.errors.Sub_group}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Category</label>
+            {{form.category}}
+            {% if form.errors.category %}
+                <label for="" class="text-danger">{{form.errors.category}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Small Description</label>
+            {{form.small_description}}
+            {% if form.errors.small_description %}
+                <label for="" class="text-danger">{{form.errors.small_description}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Tag</label>
+            {{form.tag_product}}
+            {% if form.errors.tag_product %}
+                <label for="" class="text-danger">{{form.errors.tag_product}}</label>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for = " ">Description</label>
+            {{form.description}}
+            {% if form.errors.description %}
+                <label for="" class="text-danger">{{form.errors.description}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Specification</label>
+            {{form.specification}}
+            {% if form.errors.specification %}
+                <label for="" class="text-danger">{{form.errors.specification}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Original Price</label>
+            {{form.original_price}}
+            {% if form.errors.original_price %}
+                <label for="" class="text-danger">{{form.errors.original_price}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Selling Price</label>
+            {{form.selling_price}}
+            {% if form.errors.selling_price %}
+                <label for="" class="text-danger">{{form.errors.selling_price}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Status</label>
+            {{form.status}}
+            {% if form.errors.status %}
+                <label for="" class="text-danger">{{form.errors.status}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Trending</label>
+            {{form.trending}}
+            {% if form.errors.trending %}
+                <label for="" class="text-danger">{{form.errors.trending}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Offer</label>
+            {{form.offer}}
+            {% if form.errors.offer %}
+                <label for="" class="text-danger">{{form.errors.offer}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Meta title</label>
+            {{form.meta_title}}
+            {% if form.errors.meta_title %}
+                <label for="" class="text-danger">{{form.errors.meta_title}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Meta Keywords</label>
+            {{form.meta_keywords}}
+            {% if form.errors.meta_keywords %}
+                <label for="" class="text-danger">{{form.errors.meta_keywords}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Meta Description</label>
+            {{form.meta_description}}
+            {% if form.errors.meta_description %}
+                <label for="" class="text-danger">{{form.errors.meta_description}}</label>
+            {% endif %}
+        </div>
+        {{ image_form.management_form }}
+        {% for form in image_form %}
+        {{ form.as_p }}
+        {% endfor %}
+
+        {{ variant_form.management_form }}
+        {% for form in variant_form %}
+        {{ form.as_p }}
+        {% endfor %}
+           
+		<div class="form-group">
+            <button type="submit" class="btn btn-success btn-lg">Update</button>
+        </div>
+    </form>
+   
+	
+{% endblock%}

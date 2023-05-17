@@ -1,0 +1,35 @@
+                {% for product in data %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="product__item">
+                            <div class="product__item__pic set-bg" data-setbg="/media/{{product.product_images.first.img}}" style="background-image: url(/media/{{product.product_images.first.img}});" >
+                        {% if product.tag_product %}
+                        {% if product.tag_product.first.name == 'New' %}
+                        <div class="label new">{{'New'}}</div>
+                        {% endif %}
+                        {% if product.tag_product.first.name == 'Sale' %}
+                        <div class="label sale">{{'Sale'}}</div>
+                        {% endif %}
+                        {% if product.tag_product.first.name == 'Trending' %}
+                        <div class="label stockblue">{{'Trending'}}</div>
+                        {% endif %}
+                        {% endif %}
+                                <ul class="product__hover">
+                                    <li><a href="/media/{{product.product_images.first.img}}" class="image-popup"><span class="arrow_expand"></span></a></li>
+                                    <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                    <li><a href="{% url 'product-details' product.slug %}"><span class="icon_bag_alt"></span></a></li>
+                                </ul>
+                            </div>
+                            <div class="product__item__text">
+                                <h6><a href="{% url 'product-details' product.slug %}">{{product.name}}</a></h6>
+                                {% for key,value in avarage_rating.items %}
+                                {% if key == product.uid %}
+                                {% if value %}  
+                                <div class="rating"><span>{{value}} <i class="fa fa-star"></i></span></div>
+                               {% endif %}{% endif %}{% endfor %}
+                                <div class="product__price">₹{{product.selling_price}}</div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                   {% endfor %}

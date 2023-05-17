@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>{% block title%}{% endblock %}</title>
+
+		<!-- Site favicon -->
+		
+
+		<!-- Mobile Specific Metas -->
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<!-- Google Font -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="/media/vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/media/vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/media/src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/media/src/plugins/datatables/css/responsive.bootstrap4.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="/media/vendors/styles/style.css" />
+		<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    	<!-- Default theme -->
+    	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+		{% block head %} {% endblock %}
+
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<!-- Google Tag Manager -->
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+		<!-- End Google Tag Manager -->
+		<script type="text/javascript">
+			var user= '{{request.user}}'
+	
+			function getToken(name) {
+				let cookieValue = null;
+				if (document.cookie && document.cookie !== '') {
+					const cookies = document.cookie.split(';');
+					for (let i = 0; i < cookies.length; i++) {
+						const cookie = cookies[i].trim();
+						// Does this cookie string begin with the name we want?
+						if (cookie.substring(0, name.length + 1) === (name + '=')) {
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			}
+			const csrftoken = getToken('csrftoken');
+	
+		</script>
+	
+	<style>
+		.my-alert {
+			padding: 20px;
+			background-color: #f44336;
+			color: white;
+			font-size: 18px;
+			border-radius: 10px;
+		}
+		.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination a,
+.pagination span {
+  padding: 5px 10px;
+  border-radius: 3px;
+  margin: 0 5px;
+  color: #333;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease-in-out;
+}
+
+.pagination a:hover {
+  background-color: #f5f5f5;
+}
+
+.pagination .active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.pagination .disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+	</style>
+	</head>
+	<body>
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				
+			</div>
+			
+    <!-- user notification -->            
+			
+<!-- user notification -->
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+                        
+							<span class="user-icon">
+                                
+								<img src="/media/{{admin.image}}" alt="" />
+							</span>
+							<span class="user-name">{{admin.first_name }}.{{admin.last_name}}</span>
+                            
+						</a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="{% url 'admin_profile' %}"
+								><i class="dw dw-user1"></i> Profile</a
+							>
+							
+							
+							<a class="dropdown-item" href="{% url 'adminlogout' %}"
+								><i class="dw dw-logout"></i> Log Out</a
+							>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<div class="left-side-bar" >
+			<div class="brand-logo">
+				<a href="index.html">
+					<img src="/media/img/logo.png" alt="" class="" />
+                    
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu ">
+					<ul id="accordion-menu">
+						<li class="dropdown ">
+							<a href="{% url 'adminpage' %}" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+							
+						</li>
+						<li class="dropdown">
+							<a href="{% url 'product_details' %}" class="dropdown-toggle no-arrow">
+								<span class="micon fa fa-shopping-bag"></span
+								><span class="mtext">Products</span>
+							</a>
+							
+						</li>
+						<li class="dropdown">
+							<a href="{% url 'view_all_orders' %}" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-cart"></span
+								><span class="mtext">Orders</span>
+							</a>
+							
+						</li>
+						<li>
+							<a href="{% url 'customer_details' %}" class="dropdown-toggle no-arrow">
+								<span class="micon fi-torsos-all-female"></span
+								>
+                                <span class="mtext">Customers</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="{% url 'Coupon_details' %}" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-gift-fill"></span
+								><span class="mtext"> Coupons </span>
+							</a>
+							
+						</li>
+						<li class="dropdown">
+							<a href="{% url 'Offer_details' %}" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-percent"></span
+								><span class="mtext"> Offers </span>
+							</a>
+							
+						</li>
+						<li class="dropdown">
+							<a href="{% url 'sales_report' %}" class="dropdown-toggle no-arrow">
+								<span class="micon  bi bi-journal-text"></span
+								><span class="mtext">Sales Report</span>
+							</a>
+							
+						</li>
+						<li class="dropdown">
+							<a href="{% url 'admin_profile' %}" class="dropdown-toggle no-arrow">
+								<span class="micon  dw dw-user1"></span
+								><span class="mtext">Admin Profile</span>
+							</a>
+							
+						</li>
+						
+						
+						<li>
+							<div class="dropdown-divider"></div>
+						</li>
+						
+						<li>
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-bag-plus-fill"></span
+								><span class="mtext">Details management</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="{% url 'Category_details' %}">Categories</a></li>
+								<li><a href="{% url 'Sections_details' %}">Sections</a></li>
+								<li><a href="{% url 'variant_details' %}">Variants</a></li>
+
+							</ul>
+						</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+        <div class="mobile-menu-overlay"></div>
+
+		
+            <div class="main-container">
+                <div class="xs-pd-20-10 pd-ltr-20">
+            {% block content %}{% endblock %}
+                </div>
+            </div>
+       
+           
+		
+		
+		
+		<script src="/media/vendors/scripts/core.js"></script>
+		<script src="/media/vendors/scripts/script.min.js"></script>
+		<script src="/media/vendors/scripts/process.js"></script>
+		<script src="/media/vendors/scripts/layout-settings.js"></script>
+		<script src="/media/src/plugins/apexcharts/apexcharts.min.js"></script>
+		<script src="/media/src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="/media/src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="/media/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+		<script src="/media/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+		<script src="/media/vendors/scripts/dashboard3.js"></script>
+		<!-- Google Tag Manager (noscript) -->
+		<noscript
+			><iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
+				height="0"
+				width="0"
+				style="display: none; visibility: hidden"
+			></iframe
+		></noscript>
+		<!-- End Google Tag Manager (noscript) -->
+<!-- alertify js -->
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<script>
+    alertify.set('notifier','position', 'top-right');
+</script>
+
+        {% for msg in messages %}
+            <script>
+                alertify.success('{{ msg }}');
+
+            </script>
+            
+                        
+        {% endfor %}
+
+{% block script %}{% endblock %}
+	</body>
+</html>
+
+

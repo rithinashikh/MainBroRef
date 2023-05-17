@@ -1,0 +1,289 @@
+{% extends "base/admin_base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block head %}
+<style>
+    .pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination a,
+.pagination span {
+  padding: 5px 10px;
+  border-radius: 3px;
+  margin: 0 5px;
+  color: #333;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease-in-out;
+}
+
+.pagination a:hover {
+  background-color: #f5f5f5;
+}
+
+.pagination .active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.pagination .disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.checkout__order__total {
+      width: 50%;
+      border-collapse: collapse;
+      margin: 20px;
+    }
+    
+    
+    .checkout__order__total th,
+    .checkout__order__total td {
+      padding: 8px;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    
+    
+    .checkout__order__product td img {
+      display: block;
+      margin: auto;
+    }
+    
+    .checkout__order__product td span {
+      display: block;
+      margin-top: 5px;
+    }
+    
+    .checkout__order__total tbody tr:nth-child(even) {
+  background-color: #ccd6e5;
+}
+
+.checkout__order__total tbody tr:nth-child(odd) {
+  background-color: #c8bebe;
+}
+#export-options {
+  background-color: #f8f8f8;
+  color: black;
+  border: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: all 0.15s ease-in-out;
+}
+
+#export-options:hover {
+  background-color: #eceef1;
+  color: black;
+}
+
+#export-options:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+</style>
+{% endblock %}
+{% block content %}
+<div class="card-box pb-10">
+  <div class="mx-5 pt-5">
+    <form method="get" autocomplete="off">
+        <div class="form-row">
+            <div class="col-md-4 mb-3">
+                <label for="from_date">From Date:</label>
+                <input type="date" class="form-control" name="from_date" value="{{ request.GET.from_date }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="to_date">To Date:</label>
+                <input type="date" class="form-control" name="to_date" value="{{ request.GET.to_date }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <button type="submit" class="btn btn-primary" style="margin-top: 30px;">Filter</button>
+            </div>
+        </div>
+    </form>
+  </div>
+	<div class="h5 pd-20 mb-0"></div>
+    <div class="table-responsive" id="report_id">
+        <table style="margin:10px;width: 98%;" class="table-striped table nowrap" >
+            <thead>
+                <h4 class='text-center'> Sales Report<h4>
+                <tr>
+                    <th scope="col">No.</th> 
+                    <th scope="col">Transaction ID.</th> 
+                    <th scope="col">Customer Name</th>
+                    <th scope="col">Date of Order</th>
+                    <th scope="col">Date of Delivery</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Mode of Payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr id="order-{{ order.uid }}">
+                    <td>{{forloop.counter}}</td>
+                    <td>{{order.transaction_id}}</td>
+                    <td>{{order.customer}}</td>
+                    <td>{{order.date_ordered}}</td>
+                    <td>{{order.delivery_date|date:'Y-m-d'}}
+                    </td>
+                    
+                    <td class="cart__price">₹{{order.get_grand_total}} </td>
+                    <td class="cart__quantity">
+                        {{order.status}}
+                    </td>
+                    <td class="cart__total text-center">{{order.payment_method}}</td>
+                    
+                </tr>
+                {% endfor%}	
+            </tbody>
+        </table>
+        <table class="checkout__order__total">
+            <thead>
+              <tr>
+                <th style="font-weight: 600;" class="text-center"><u>Order Details</th>
+                    </u>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Sale Amount:</td>
+                    <td>{{net_cart}}</td>
+                  </tr>
+                  <tr>
+                    <td>Total Discount Applied:</td>
+                    <td>{{net_discount}}</td>
+                  </tr>
+                  <tr>
+                    <td>Gross Income:</td>
+                    <td>{{net_income}}</td>
+                  </tr>
+              <tr>
+                <td>Total Orders:</td>
+                <td>{{total_orders}}</td>
+              </tr>
+              
+              <tr>
+                <td>Total Deliveries:</td>
+                <td>{{deliveries}}</td>
+              </tr>
+              <tr>
+                <td>No of Canceled/Returned Orders:</td>
+                <td>{{canceled}}</td>
+              </tr>
+              <tr>
+                <td>No of Pending Orders:</td>
+                <td>{{pending}}</td>
+              </tr>
+              
+            </tbody>
+          </table>
+          <div style="margin-bottom: 100px;">
+            <select class="float-right btn btn-primary mx-5 " style="background-color: #9abfe7;" id="export-options" onchange="exportData()">
+              <option value=" ">Choose option</option>
+              <option value="excel">Export to Excel</option>
+              <option value="pdf">Download PDF</option>
+            </select>
+          </div>
+    
+    </div>
+    
+    
+  {% if orders.has_other_pages %}
+    <div class="pagination">
+        {% if orders.has_previous %}
+            <a href="?page=1" class="page-link">&laquo; First</a>
+            <a href="?page={{ orders.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+        {% endif %}
+
+        {% for i in orders.paginator.page_range %}
+            {% if orders.number == i %}
+                <span class="page active">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if orders.has_next %}
+            <a href="?page={{ orders.next_page_number }}" class="page-link">Next &rsaquo;</a>
+            <a href="?page={{ orders.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+        {% endif %}
+    </div>
+{% endif %}
+    
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    function exportData() {
+  var selectedOption = document.getElementById("export-options").value;
+
+  if (selectedOption == "excel") {
+    // call function to export to excel
+    exportTableToExcel('report_id', 'Sales Report');
+  } else if (selectedOption == "pdf") {
+    // call function to download pdf
+    downloadPDF();
+
+  }
+}
+function exportTableToExcel(report_id, filename = 'Sales-report'){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(report_id);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+    // Specify file name
+    filename = filename?filename+'.xls':'excel_data.xls';
+
+    // Create download link element
+    downloadLink = document.createElement("a");
+
+    document.body.appendChild(downloadLink);
+
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+        // Setting the file name
+        downloadLink.download = filename;
+
+        //triggering the function
+        downloadLink.click();
+        location.reload()
+    }
+}
+
+function downloadPDF() {
+    const element = document.getElementById('report_id');
+
+  // configure the html2pdf options
+    const options = {
+      filename: 'sales-report.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+  // convert the element to PDF
+  html2pdf().from(element).set(options).save();
+}
+</script>
+
+{% endblock %}

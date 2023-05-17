@@ -1,0 +1,221 @@
+{% extends "base/base.html" %}
+{% block head %}
+<style>
+    .carousel-caption-heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.carousel-caption-subheading {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.btn-shop-now {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    padding: 1rem 2rem;
+    border-radius: 0;
+}
+
+</style>
+{% endblock %}
+{% block offcanvas %}
+{% if flag %}
+    {% include "base/loggedin.html" %}
+    
+    {% else %}
+    {% include "base/loggedout.html" %}
+        
+    {% endif %}
+{% endblock %}
+    
+{% block navigation %}
+    
+{% if flag %}
+    
+{% include "base/loggedin.html" %}
+{% else %}
+{% include "base/loggedout.html" %}
+{% endif %} 
+    
+    
+{% endblock %}
+
+{% block content %}
+<!-- Categories Section Begin -->
+<section class="categories">
+    <div class="container-fluid">
+        <div class="row">    
+            <div class="col-md-12">
+                
+                <div class="col-md-12">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                           
+                            {% for item in group %}
+                          <li data-target="#carouselExampleIndicators" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+                          {% endfor %}
+                        </ol>
+                        <div class="carousel-inner">
+                            {% for item in group %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <div class="row align-items-center">
+                                    
+                                        <img class="d-block w-100" src="/media/{{item.img}}" alt="{{item.name}}">
+                                   
+                                        <div class="carousel-caption d-none d-md-block">
+                                            <div class="text-center">
+                                                <h2 class="carousel-caption-heading">{{item.name}}</h2>
+                                                <a href="{% url 'group_view' item.slug %}" class="btn btn-primary btn-shop-now">Shop now</a>
+                                            </div>
+                                        </div>
+                                        
+                                        
+                                </div>
+                            </div>
+                            
+                          
+                          {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Next</span>
+                        </a>
+                      </div>
+                </div>
+        </div>
+    </div>
+</section>
+<!-- Categories Section End -->
+<!-- Product Section Begin -->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <div class="section-title">
+                    <h4>All Products</h4>
+                </div>
+            </div>
+             
+        </div>
+        <div class="row property__gallery">
+            {% for product in products %}
+                
+            <div class="col-lg-3 col-md-4 col-sm-6 mix women">
+                <div class="product__item">
+                    <div class="product__item__pic set-bg" data-setbg="/media/{{product.product_images.first.img}}">
+                        {% if product.tag_product.first %}
+                        {% if product.tag_product.first.name == 'New' %}
+                            <div class="label new">{{ product.tag_product.first.name }}</div>
+                        {% elif product.tag_product.first.name == 'Sale' %}
+                            <div class="label sale">{{ product.tag_product.first.name }}</div>
+                        {% elif product.tag_product.first.name == 'Trending' %}
+                            <div class="label stockblue">{{ product.tag_product.first.name }}</div>
+                        {% else %}
+                            <div class="label stockblue">{{ product.tag_product.first.name }}</div>
+                        {% endif %}
+                    {% endif %}
+
+                        <ul class="product__hover">
+                            <li><a href="/media/{{product.product_images.first.img}}" class="image-popup"><span class="arrow_expand"></span></a></li>
+                            <li><a href="#"><span id="addToWishlist" class="icon_heart_alt" data-index="{{product.uid}}" onclick="addToWishlist(event)"></span></a></li>
+                            <li><a href="{% url 'product-details' product.slug %}"><span class="icon_bag_alt"></span></a></li>
+                        </ul>
+                    </div>
+                    <div class="product__item__text">
+                        <p style="color:#b19975"><a href=""><a href="{% url 'product-details' product.slug %}"><b>{{product.name}}</b></a></p>
+                        <h6><a href="{% url 'product-details' product.slug %}"><b>{{product.brand.first.name}}</b></a></h6>
+                        {% for key,value in avarage_rating.items %}
+                        {% if key == product.uid %}
+                        {% if value %}  
+                        <div class="rating"><span>{{value}} <i class="fa fa-star"></i></span></div>
+                       {% endif %}{% endif %}{% endfor %}
+                        <div class="product__price">₹{{product.selling_price}}</div>
+                    </div>
+                </div>
+            </div>   
+            {% endfor %}       
+        </div>
+        {% if products.has_other_pages %}
+            <div class="pagination">
+                {% if products.has_previous %}
+                    <a href="?page=1" class="page-link">&laquo; First</a>
+                    <a href="?page={{ products.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+                {% endif %}
+
+                {% for i in products.paginator.page_range %}
+                    {% if products.number == i %}
+                        <span class="page active">{{ i }}</span>
+                    {% else %}
+                        <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if orders.has_next %}
+                    <a href="?page={{ products.next_page_number }}" class="page-link">Next &rsaquo;</a>
+                    <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+<!-- Product Section End -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+    function addToWishlist(event) {
+    event.preventDefault(); // prevent the default anchor tag behavior
+    var input = event.target; 
+    console.log('input:',input);
+    var _productUid=input.getAttribute('data-index');
+    var token=$('input[name=csrfmiddlewaretoken]').val();
+        
+        if (user=== 'AnonymousUser'){
+            console.log('not authenticated')
+            addtowishlist(_productUid)
+        }else{
+            addtowishlist(_productUid)
+        }
+  }
+  function addtowishlist(_productUid){
+        console.log('user:',user,'productuid',_productUid)
+
+        var url = '/add-to-wishlist/'
+        fetch(url, {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRFToken' : csrftoken,
+            },
+            body:JSON.stringify({
+                'uid':_productUid,
+                
+            })
+        })
+        .then((response) =>{
+            return response.json()
+        })
+        .then((data) =>{
+            console.log('data:',data)
+            swal(JSON.stringify(data)).then(()=>{
+                location.reload();
+            })
+        })
+
+     };
+
+
+</script>
+
+{% endblock %}
+

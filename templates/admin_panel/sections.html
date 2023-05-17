@@ -1,0 +1,95 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}Sections and Sub sections{% endblock %}
+{% block content %}
+
+<div class="card-box pb-10">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="table-responsive">
+	<table style="margin: 10px;width:98%" class="table-striped table nowrap">
+		<thead>
+           <h4 class='text-center'> Sections<h4>
+			<tr>
+        <th scope="col">No.</th> 
+        <th scope="col">Name</th>
+        <th scope="col">Image</th>
+        <th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in sections %}
+      <tr>
+        <th>{{forloop.counter}}</th>
+        
+          <th >{{i.name}}</th>
+          <th ><img style="width: 200px; height: 130px;" src="/media/{{i.img}}"></th>
+          
+          <td><a href="{% url 'section_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+              <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+          </a>
+
+            <a href="{% url 'section_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+              <i class="icon-copy bi bi-trash"></i>
+              
+              
+          </td>
+        </tr>
+                          
+        {% endfor%}	
+		</tbody>
+	</table></div>
+</div>
+<div style="margin:10px" class="p-2 float-right">
+    <a href="{% url 'add_sections' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        </i> Add New Section
+    </button></a>
+    </div>
+    <hr>
+    <div></div>
+    <div></div>
+  <!-- end of sections -->
+<div class="card-box pb-10 " style="margin-top: 80px;">
+	<div class="h5 pd-20 mb-0"></div>
+  <div class="table-responsive">
+	<table style="margin: 10px;width:98%"  class="table-striped table nowrap" >
+		<thead>
+           <h4 class='text-center'> Sub sections<h4>
+			<tr>
+                    <th scope="col">No.</th> 
+                    <th scope="col">Name</th>
+                    
+                    <th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in sub_sections %}
+                        <tr>
+                          <th>{{forloop.counter}}</th>
+                          
+                            <th >{{i.name}}</th>
+                            <td><a href="{% url 'subsection_update' i.uid %}" class="btn text secondary px-0 " data-toggle="tooltip" title="Edit">
+                                <i class="icon-copy fa fa-edit" aria-hidden="true"></i>
+                            </a>
+                         
+                             <a href="{% url 'subsection_delete' i.uid %}" class="btn-block text secondary px-0" data-toggle="tooltip" title="Delete" data-target="" type="button">
+                                <i class="icon-copy bi bi-trash"></i>
+                                
+                                
+                           </td>
+                          </tr>
+                          
+                        {% endfor%}	
+		</tbody>
+	</table></div>
+</div>
+<div style="margin:10px" class="p-3 float-right">
+    <a href="{% url 'add_subsections' %}">
+    <button type="button" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        </i> Add New sub section
+    </button></a>
+    </div>  
+
+    <!-- color end  -->
+ 
+{% endblock %}  

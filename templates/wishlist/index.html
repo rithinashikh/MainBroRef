@@ -1,0 +1,180 @@
+{% extends "base/base.html" %}
+{% block head%}
+<style>
+    .text-center {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center !important;
+      color: #d31414;
+      margin: 20px 0;
+      
+    }
+    .product-container {
+    max-width: 1500px; 
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+    </style>
+{% endblock %}
+    
+{% block offcanvas %}
+{% if flag %}
+    {% include "base/loggedin.html" %}
+    
+    {% else %}
+    {% include "base/loggedout.html" %}
+        
+    {% endif %}
+{% endblock %}
+    
+{% block navigation %}
+    
+{% if flag %}
+    
+{% include "base/loggedin.html" %}
+{% else %}
+{% include "base/loggedout.html" %}
+{% endif %} 
+    
+    
+{% endblock %}
+
+
+{% block content %}
+   <!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                    <span>Your Favourites</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+    <!-- Shop Cart Section Begin -->
+    <hr>
+    <div class="product-container">
+    <div class="col-lg-12 col-md-12" style="margin-left: 120px;
+    margin-right: 120px; ">
+        <h3 class="text-center">{{ message }}</h3>
+        <hr>
+        <div class="row" id="filtered_products">
+            {% for item in wishitem %}
+            <div  class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <div class="product__item">
+                    <div class="product__item__pic set-bg" data-setbg="/media/{{item.product.product_images.first.img}}">
+                {% if item.product.tag_product %}
+                {% if item.product.tag_product.first.name == 'New' %}
+                <div class="label new">{{'New'}}</div>
+                {% endif %}
+                {% if item.product.tag_product.first.name == 'Sale' %}
+                <div class="label sale">{{'Sale'}}</div>
+                {% endif %}
+                {% if item.product.tag_product.first.name == 'Trending' %}
+                <div class="label stockblue">{{'Trending'}}</div>
+                {% endif %}
+                {% endif %}
+                        <ul class="product__hover">
+                            <li><a href="/media/{{item.product.product_images.first.img}}" class="image-popup"><span class="arrow_expand"></span></a></li>
+                            <li><a href="{% url 'product-details' item.product.slug %}"><i class="icon-copy fa fa-eye" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><span id="deleteWishlist" class="icon-copy fa fa-trash-o" data-index="{{item.product.uid}}" onclick="deleteFromWishlist(event)"></span></a></li>
+                        </ul>
+                    </div>
+                    <div class="product__item__text">
+                        <h6><a href="{% url 'product-details' item.product.slug %}">{{item.product.name}}</a></h6>
+                        <div class="rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div class="product__price">₹{{item.product.selling_price}}</div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+           {% endfor %}
+            
+           
+            
+        </div>
+    </div>
+    
+    </div>
+    {% if wishitem.has_other_pages %}
+                    <div class="pagination">
+                        {% if wishitem.has_previous %}
+                            <a href="?page=1" class="page-link">&laquo; First</a>
+                            <a href="?page={{ wishitem.previous_page_number }}" class="page-link">&lsaquo; Previous</a>
+                        {% endif %}
+        
+                        {% for i in wishitem.paginator.page_range %}
+                            {% if wishitem.number == i %}
+                                <span class="page active">{{ i }}</span>
+                            {% else %}
+                                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                            {% endif %}
+                        {% endfor %}
+        
+                        {% if wishitem.has_next %}
+                            <a href="?page={{ wishitem.next_page_number }}" class="page-link">Next &rsaquo;</a>
+                            <a href="?page={{ wishitem.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+        function deleteFromWishlist(event) {
+        event.preventDefault(); // to prevents the default anchor tag behavior
+        var input = event.target; 
+        console.log('input:',input);
+        var _productUid=input.getAttribute('data-index');
+        var token=$('input[name=csrfmiddlewaretoken]').val();
+            
+            if (user=== 'AnonymousUser'){
+                console.log('not authenticated')
+            }else{
+                deletewishlist(_productUid)
+            }
+      }
+      function deletewishlist(_productUid){
+            console.log('user:',user,'productuid',_productUid)
+    
+            var url = '/delete-from-wishlist/'
+            fetch(url, {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken' : csrftoken,
+                },
+                body:JSON.stringify({
+                    'uid':_productUid,
+                    
+                })
+            })
+            .then((response) =>{
+                return response.json()
+            })
+            .then((data) =>{
+                console.log('data:',data)
+                location.reload()
+                swal(JSON.stringify(data));
+                
+            })
+    
+         };
+    
+    
+    </script>
+
+
+{% endblock %}

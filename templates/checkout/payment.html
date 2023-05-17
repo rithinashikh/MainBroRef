@@ -1,0 +1,265 @@
+{% extends "base/base.html" %}
+
+
+
+{% block offcanvas %}
+{% if flag %}
+    {% include "base/loggedin.html" %}
+    
+    {% else %}
+    {% include "base/loggedout.html" %}
+        
+    {% endif %}
+{% endblock %}
+    
+{% block navigation %}
+    
+{% if flag %}
+    
+{% include "base/loggedin.html" %}
+{% else %}
+{% include "base/loggedout.html" %}
+{% endif %} 
+    
+    
+{% endblock %}
+
+{% block content %}
+ <!-- Breadcrumb Begin -->
+ <div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                    <a href="{% url 'checkout' %}">Checkout </a>
+                    <span>Payment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<section class="checkout spad">
+    <div class="container">
+        
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="checkout__order">
+                        <h5>Your order</h5>
+                        <div class="checkout__order__product">
+                            <ul>
+                                <li>
+                                    <span class="top__text">Product</span>
+                                    <span class="top__text__right">Total</span>
+                                </li>
+                                {% for item in items %}
+                                <li>{{item.product.name}} <span>₹{{item.get_total}}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="checkout__order__total">
+                            <ul>
+                                {% if flag%}
+                                <li>Subtotal <span>₹{{order.get_original_cart_total}}</span></li>
+                                <li>Coupon Discount <span>-₹{{order.get_discount}}</span></li>
+                                <li>Offer Discount<span>-₹{{order.get_total_offer_discount}}</span></li>
+                                {% endif %}
+                                <li>Total <span>₹{{order.get_grand_total}}</span></li>
+                            </ul>
+                        </div>
+                        <div >
+                            
+                            <form method="post" id="checkout-form">
+                                {% csrf_token %}
+                            
+                                <div class="form-group">
+                                    <label for="{{ form.payment_method.id_for_label }}">Select Payment Method:</label>
+                                    {{ form.payment_method }}
+                                </div>
+                            
+                                <button type="submit" class="btn btn-primary">Place Order</button>
+                            </form>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div style="background-color: rgb(100, 114, 100);" class="checkout__order">
+                            <h5>Billing Details</h5>
+                            <div  class="checkout__order__product">
+                                
+                                <ul>
+                                    <li>
+                                        <span class="top__text">Address</span>
+                                    </li>
+                                    <li>{{order.shipping_address.first_name}} {{order.shipping_address.last_name}}</li>
+                                    <li>{{order.shipping_address.address}}<br /> {{order.shipping_address.city}} </li>
+                                    <li>{{order.shipping_address.state}} </li>
+                                    <li>{{order.shipping_address.country}} <span>Pincode: {{order.shipping_address.pincode}}</span></li>
+                                    <hr>
+                                    <li>Email: {{order.shipping_address.email}} <span>Phone: {{order.shipping_address.phone}}</span></li>
+
+                                </ul>
+                                
+                            </div>
+                            <div class="checkout__order__total">
+                                {% if flag %}
+                                <ul >
+                                  <a  href="{% url 'edit_address' order.shipping_address.uid %}"><button type="button" class="btn btn-light">Edit address</button></a>
+                                  <br><br>
+                                  <a href="{% url 'checkout' %}"><button type="button" class="btn btn-dark">Change address</button></a>
+                                  
+                                </ul>
+                                {% endif %}
+                            </div>
+                            
+                            </div>
+                        </div>
+                    
+                </div>
+            </form>
+        </div>
+    </section>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script>
+    $(document).ready(function() {
+    const checkoutForm = document.getElementById('checkout-form');
+    checkoutForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission behavior
+        const paymentMethod = checkoutForm.elements['payment_method'].value; // Retrieve selected payment method from form
+        console.log('Selected Payment Method:', paymentMethod); // Log selected payment method to console
+        var name = "{{order.shipping_address.first_name}}{{order.shipping_address.last_name}}";
+        var email="{{order.shipping_address.email}}";
+        var phone="{{order.shipping_address.phone}}";
+        console.log(name,email,phone)
+        if(paymentMethod=='COD'){
+        sendingmethodofpayment(paymentMethod,name,email,phone)
+        }
+        else if(paymentMethod=='Razorpay'){
+            $.ajax({
+                method: "GET",
+                url: "/proceed-to-pay",
+                success: function(response){
+                    console.log(response)
+                    var options = {
+                        "key": "rzp_test_MAJjU9wTVNs2QI", // Enter the Key ID generated from the Dashboard
+                        "amount": 1*100,//response.total_price*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                        "currency": "INR",
+                        "name": "Cartify Shopping", //your business name
+                        "description": "Pay with razorpay",
+                        "image": "/media/img/logo.png",
+                        "handler": function (resp){
+                            // alert(resp.razorpay_payment_id);
+                            var name=response.customer_name;
+                            var email=response.customer_email;
+                            var payment_method="Razorpay";
+                            var phone=response.phone;
+                            // var payment_id=resp.razorpay_payment_id;
+                            sendingmethodofpayment(paymentMethod,name,email,phone)
+                        },
+                        "prefill": {
+                            "name": response.customer_name, //your customer's name
+                            "email":response.customer_email,
+                            "contact": response.phone,
+                        },
+                       
+                        "theme": {
+                            "color": "#3399cc"
+                        }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.on('payment.failed', function (response){
+                            alert(response.error.code);
+                            alert(response.error.description);
+                            alert(response.error.source);
+                            alert(response.error.step);
+                            alert(response.error.reason);
+                            alert(response.error.metadata.order_id);
+                            alert(response.error.metadata.payment_id);
+                    });
+                    rzp1.open();
+                }
+            });
+        }
+        
+        else if(paymentMethod=='Paypal'){
+            console.log(paymentMethod,name,email,phone)
+            sendingmethodofpayment(paymentMethod,name,email,phone)
+        }
+    });
+});
+    function sendingmethodofpayment(paymentMethod,name,email,phone){
+        console.log('das',paymentMethod,name,email,phone)
+        var url='/payment-method/'
+        if (paymentMethod == 'Paypal') {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                'paymentMethod': paymentMethod,
+                'name': name,
+                'email': email,
+                'phone': phone,
+            })
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            console.log('data:', data);
+            window.location.href = "/checkout/paypal-payment";
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert("Failed to place order.");
+        });} else {
+            fetch(url,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRFToken' : csrftoken, 
+            },
+            
+            body:JSON.stringify({
+                'paymentMethod':paymentMethod,
+                'name':name,
+                'email':email,
+                'phone':phone,
+            })
+        })
+        .then((response) =>{
+        return response.json()
+      })
+      .then((data) => {
+        console.log('data:', data);
+        swal({
+            title: "Success!",
+            text: "Order placed successfully.",
+            icon: "success",
+            button: "OK",
+        }).then(() => {
+            window.location.href = "/cart/";
+        });
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        swal({
+            title: "Error!",
+            text: "Failed to place order.",
+            icon: "error",
+            button: "OK",
+        });
+    });
+    }
+
+
+        
+    
+};
+</script> 
+{% endblock %}

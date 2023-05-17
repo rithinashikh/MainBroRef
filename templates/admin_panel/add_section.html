@@ -1,0 +1,25 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}add section details{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for = " ">Name</label>
+        {{form.name}}
+        {% if form.errors.name %}
+            <label for="" class="text-danger">{{form.errors.name}}</label>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        <label for = " ">Image</label>
+        {{form.img}}
+        {% if form.errors.img %}
+            <label for="" class="text-danger">{{form.errors.img}}</label>
+        {% endif %}
+    </div>
+    
+    <button type="submit" class="btn  " data-bgcolor="green" data-color="ffffff" style="color: rgb(255, 255, 255); background-color: rgb(0, 180, 137);">
+        Submit</button>
+</form>
+{% endblock %}

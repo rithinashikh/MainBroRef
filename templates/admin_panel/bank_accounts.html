@@ -1,0 +1,324 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}Bank_details{% endblock %}
+
+{% block head %}
+<style>
+  .sidebar {
+    background-color: ghostwhite;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .profile {
+    background-color: ghostwhite;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .profile-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+
+  .avatar-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-name {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+
+  .profile-title {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+
+  .contact-info {
+    font-family: Arial, sans-serif;
+    color: #333;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+    margin-top: 30px;
+  }
+
+  .contact-info-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+
+  .contact-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .contact-info ul li {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+  }
+
+  .contact-info ul li:last-child {
+    border-bottom: none;
+  }
+
+  .contact-info ul li span {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .my-profile {
+border: 1px solid #ccc;
+border-radius: 5px;
+padding: 20px;
+}
+
+.my-profile__title {
+font-size: 24px;
+font-weight: bold;
+color: #333;
+margin-bottom: 10px;
+}
+
+.my-profile__list {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.my-profile__item {
+margin-bottom: 10px;
+}
+
+.my-profile__link {
+display: block;
+padding: 10px;
+background-color: #f5f5f5;
+border-radius: 5px;
+color: #333;
+text-decoration: none;
+transition: background-color 0.2s ease;
+}
+
+.my-profile__link:hover {
+background-color: #ddd;
+}
+
+  .profile-photo {
+position: relative;
+}
+
+.upload-icon {
+position: absolute;
+bottom: 0;
+right: 0;
+margin: 10px;
+}
+
+.upload-icon label {
+display: block;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+background-color: #fff;
+text-align: center;
+cursor: pointer;
+}
+
+.upload-icon label i {
+font-size: 16px;
+line-height: 30px;
+color: #333;
+}
+
+.upload-icon input[type="file"] {
+display: none;
+}
+/* card */
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.card {
+  width: 18rem;
+  background-color: ghostwhite;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  margin: 10px;
+  color: white;
+}
+
+.default-text {
+  color: white;
+  float: right;
+  margin-right: 10px;
+}
+
+.card-title {
+  color: darkolivegreen;
+  font-weight: bold;
+}
+
+.card-subtitle {
+  color: #aaa;
+  font-weight: bold;
+}
+
+.card-text {
+  color: darkolivegreen;
+  margin-bottom: 0.25rem;
+}
+
+.card-link {
+  color: darkblue;
+  margin-right: 1rem;
+}
+
+.card-link:hover {
+  text-decoration: none;
+}
+
+.icon-copy {
+  color: darkolivegreen;
+  float: right;
+  
+}
+.icon-bottom{
+  color:darkolivegreen
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div >
+
+    <div >
+        <div >
+            
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30 sidebar">
+                    <div class=" profile pd-20 card-box height-10-p">
+                      <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="profile-photo">
+                          {% if user.image %}
+                            <img id="profile-image" src="/media/{{user.image}}" alt="" class="avatar-photo" />
+                          {% else %}
+                            <img id="profile-image" src="/media/img/profile.png" alt="" class="avatar-photo" />
+                          {% endif %}
+                          <div class="upload-icon">
+                            <label for="image-upload">
+                              <i class="icon-copy fa fa-camera" aria-hidden="true"></i>
+                            </label>
+                            <input id="image-upload" type="file" name="image" accept="image/*">
+                          </div>
+                          
+                        </div>
+                      </form>
+                      
+                          <h5 class="profile-name">{{user.first_name}} {{user.last_name}}</h5>
+                        </div>
+                        <div class="contact-info">
+                            <h5 class="contact-info-title">Contact Information</h5>
+                            <ul>
+                              <li>
+                                <span>Email Address:</span>
+                                {{user.email}}
+                              </li>
+                              <li>
+                                <span>Phone Number:</span>
+                                {{user.mobile}}
+                              </li>
+                              
+                            </ul>
+                          </div>
+                          
+                          <nav class="my-profile">
+                            <h2 class="my-profile__title">Profile</h2>
+                            <ul class="my-profile__list">
+                              <li class="my-profile__item"><a href="{% url 'admin_profile' %}" class="my-profile__link">Edit Personal Information</a></li>
+                              <li class="my-profile__item"><a href="{% url 'admin_bank' %}" class="my-profile__link">Manage Bank Account Details</a></li>
+                              <li class="my-profile__item"><a href="{% url 'security_settings' %}" class="my-profile__link">Privacy Settings</a></li>
+                            </ul>
+                          </nav>
+                          
+                          
+                          
+                </div>
+                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mb-30">
+                    <div class="card-container">
+                        {% for acc in account_details %}
+                        <div class="card">
+                          <div class="card-body">
+                            {% if acc.is_default %}
+                            <i class="icon-copy fa fa-check-square" aria-hidden="true"></i><p class="default-text">Default</p>
+                            {% endif %}
+                            <h5 class="card-title"> {{acc.account_holder}}</h5>
+                            <hr>
+                            <h6 class="card-subtitle mb-2 text-muted">Account Details</h6>
+                            <p class="card-text">Name of Bank : {{acc.bank}}</p>
+                            <p class="card-text">Branch: {{acc.branch}}</p>
+                            <p class="card-text">IFSC: {{acc.IFSC}}</p>
+                            <p class="card-text">Ac Number: {{acc.account_number}}</p>
+                            <p class="card-text">UPI: {{acc.Upi}}</p>
+                            <a href="{% url 'edit_account' acc.uid %}" class="card-link" data-toggle="tooltip" title="Edit"><i class="icon-bottom fa fa-edit" aria-hidden="true"></i></a>
+                            <a href="{% url 'delete_account' acc.uid %}" class="card-link" data-toggle="tooltip" title="Delete"><i class="icon-bottom fa fa-trash" aria-hidden="true"></i></a>
+                          </div>
+                        </div>
+                        {% endfor %}
+                        
+                      </div>
+                      <a href="{% url 'add_account_details' %}" class="btn btn-info">Add New</a>
+                </div>
+                
+              
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  const profileImage = document.getElementById('profile-image');
+  const imageUpload = document.getElementById('image-upload');
+
+  imageUpload.addEventListener('change', () => {
+    const file = imageUpload.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    fetch('/update-admin-profile/', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken' : csrftoken,
+      }
+    })
+      .then(response => response.json())
+      
+      .then(data => {
+        profileImage.src = `/media/${data.image}`;
+        location.reload(); 
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  });
+</script>
+
+{% endblock %}

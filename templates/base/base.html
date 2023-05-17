@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ashion Template">
+    <meta name="keywords" content="Ashion, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title%}{% endblock %}</title>
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="/media/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/style.css" type="text/css">
+    <!-- alertify js -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <!-- Default theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <!-- autocomplete -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    
+    {% block head %}{% endblock %}
+    <script type="text/javascript">
+        var user= '{{request.user}}'
+
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getToken('csrftoken');
+
+        function getCookie(name){
+            var cookieArr = document.cookie.split(";");
+            for(var i = 0; i < cookieArr.length; i++){
+                var cookiePair = cookieArr[i].split("=");
+                if(name == cookiePair[0].trim()){
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            return null; 
+        }
+        
+        var cart = JSON.parse(getCookie('cart'))
+       
+        if(cart == undefined){
+            cart={}
+            console.log('cart created !',cart)
+            console.log('hii')
+            document.cookie = 'cart='+JSON.stringify(cart)+ ";domain=;path=/"
+        }
+        console.log('cart:',cart)
+ 
+    </script>
+
+<style>
+    .my-alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+        font-size: 18px;
+        border-radius: 10px;
+    }
+    .pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    }
+
+    .pagination a,
+    .pagination span {
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin: 0 5px;
+    color: #333;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease-in-out;
+    }
+
+    .pagination a:hover {
+    background-color: #f5f5f5;
+    }
+
+    .pagination .active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+    }
+
+    .pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    }
+    </style>
+
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Offcanvas Menu Begin -->
+    <div class="offcanvas-menu-overlay"></div>
+    <div class="offcanvas-menu-wrapper">
+        <div class="offcanvas__close">+</div>
+        <ul class="offcanvas__widget">
+            <li><a href="{% url 'view_wishlist' %}"><span class="icon_heart_alt"></span>
+                <div class="tip">{{item_count}}</div>
+            </a></li>
+            <li><a href="{% url 'cartpage' %}"><span class="icon_cart_alt"></span>
+                <div class="tip">{{no_items}}</div>
+            </a></li>
+        </ul>
+        <div class="offcanvas__logo">
+            <a href=""><img src="/media/img/logo.png" alt=""></a>
+        </div>
+        <div id="mobile-menu-wrap"></div>
+        {% block offcanvas %}{% endblock %}
+        
+    </div>
+    <!-- Offcanvas Menu End -->
+
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-3 col-lg-2">
+                    <div class="header__logo" style="padding:0px;">
+                        <a href=""><img src="/media/img/logo.png" alt=""></a>
+                        <div class="menu-icon bi bi-list"></div>
+				
+                        <div class="header-search m-2 input-group">
+                            <form action="{% url 'searchproduct' %}" method="POST">
+                                {% csrf_token %}
+                                <div style="width: 200%;" class="form-group mb-0 input-group-prepend ">
+                                    <input
+                                        type="search"
+                                        required
+                                        name="searchkey"
+                                        class="form-control search-input"
+                                        placeholder="Search Here"
+                                        id="searchproducts"
+                                    />
+                                    <button type="submit" class="input-group-text btn btn-warning" ><i class="icon-copy fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-7">
+                    <nav class="header__menu">
+                        
+                        <ul>
+                            <li ><a href="{% url 'homepage' %}">Home</a></li>
+                            <li><a href="{% url 'group_view' 'women' %}">Women’s</a></li>
+                            <li><a href="{% url 'group_view' 'men' %}">Men’s</a></li>
+                            <li><a href="{% url 'group_view' 'kids' %}">Kids</a></li>
+                            
+                            <li><a href="{% url 'shop' %}">shop</a></li>
+                            {% include "base/account.html" %}
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    <div class="header__right">
+                        <ul class="header__right__widget">
+                            {% block navigation %} {% endblock %}
+    
+                            <li><a href="{% url 'view_wishlist' %}"><span class="icon_heart_alt"></span>
+                                <div class="tip">{{item_count}}</div>
+                            </a></li>
+                            <li><a href="{% url 'cartpage' %}"><span class="icon_cart_alt"></span>
+                                <div class="tip">{{no_items}}</div>
+                            </a></li>
+                        </ul>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="canvas__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Header Section End -->
+    {% block content %}{% endblock %}
+    
+
+
+<!-- Footer Section Begin -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-7">
+                <div class="footer__about">
+                    <div class="footer__logo">
+                        <a href="./index.html"><img src="img/logo.png" alt=""></a>
+                    </div>
+                    <p>Shop smarter, faster, and easier with Cartify - your ultimate online shopping destination!.</p>
+                    <div class="footer__payment">
+                        <a href="#"><img src="/media/img/payment/payment-1.png" alt=""></a>
+                        <a href="#"><img src="/media/img/payment/payment-2.png" alt=""></a>
+                        <a href="#"><img src="/media/img/payment/payment-3.png" alt=""></a>
+                        <a href="#"><img src="/media/img/payment/payment-4.png" alt=""></a>
+                        <a href="#"><img src="/media/img/payment/payment-5.png" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-5">
+                <div class="footer__widget">
+                    <h6>Quick links</h6>
+                    <ul>
+                        <li><a href="{% url 'homepage' %}">Home</a></li>
+                        <li><a href="{% url 'group_view' 'women' %}">Mens</a></li>
+                        <li><a href="{% url 'group_view' 'men' %}">Women's</a></li>
+                        <li><a href="{% url 'group_view' 'kids' %}">Kids</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-4">
+                <div class="footer__widget">
+                    <h6>Account</h6>
+                    <ul>
+                        <li><a href="{% url 'customer_account' %}">My Account</a></li>
+                        <li><a href="{% url 'view_order' %}">Orders</a></li>
+                        <li><a href="{% url 'checkout' %}">Checkout</a></li>
+                        <li><a href="{% url 'view_wishlist' %}">Wishlist</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-8 col-sm-8">
+                <div class="footer__newslatter">
+                    <h6>Follow Us</h6>
+                    
+                    <div class="footer__social">
+                        <a href="https://www.facebook.com"><i class="fa fa-facebook"></i></a>
+                        <a href="https://twitter.com/"><i class="fa fa-twitter"></i></a>
+                        <a href="https://www.youtube.com/"><i class="fa fa-youtube-play"></i></a>
+                        <a href="https://www.instagram.com/"><i class="fa fa-instagram"></i></a>
+                        <a href="https://in.pinterest.com/"><i class="fa fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+               
+                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Footer Section End -->
+
+
+
+<!-- Js Plugins -->
+<script src="/media/js/jquery-3.3.1.min.js"></script>
+<script src="/media/js/bootstrap.min.js"></script>
+<script src="/media/js/jquery.magnific-popup.min.js"></script>
+<script src="/media/js/jquery-ui.min.js"></script>
+<script src="/media/js/mixitup.min.js"></script>
+<script src="/media/js/jquery.countdown.min.js"></script>
+<script src="/media/js/jquery.slicknav.js"></script>
+<script src="/media/js/owl.carousel.min.js"></script>
+<script src="/media/js/jquery.nicescroll.min.js"></script>
+<script src="/media/js/main.js"></script>
+<script src="/media/js/custom.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+    var availableTags = [];
+    $.ajax({
+        method: "GET",
+        url:"/product-list",
+        success: function(response){
+            startAutocomplete(response)
+        }
+
+    });
+    function startAutocomplete(availableTags)
+    {
+        $( "#searchproducts" ).autocomplete({
+        source: availableTags,
+        maxResults: 5
+    });
+    }
+    
+</script>
+
+<!-- alertify js -->
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<script>
+    alertify.set('notifier','position', 'top-right');
+</script>
+
+        {% for msg in messages %}
+            <script>
+                alertify.success('{{ msg }}');
+
+            </script>
+            
+                        
+        {% endfor %}
+</body>
+
+</html>

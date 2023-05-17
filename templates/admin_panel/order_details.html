@@ -1,0 +1,302 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}order details{% endblock %}
+
+{% block head %} 
+<style>
+    .checkout__order__product {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.checkout__order__product td {
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.checkout__order__product td:first-of-type {
+  width: 50%;
+  text-align: right;
+}
+
+.checkout__order__product tr:last-of-type td {
+  border-top: 2px solid #dee2e6;
+}
+
+.checkout__order__product tfoot td {
+  font-weight: 700;
+}
+
+    .checkout__order__total {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    
+    .checkout__order__total th,
+    .checkout__order__total td {
+      padding: 8px;
+      text-align: left;
+      font-size: 16px;
+    }
+    
+    
+    
+    .checkout__order__product td img {
+      display: block;
+      margin: auto;
+    }
+    
+    .checkout__order__product td span {
+      display: block;
+      margin-top: 5px;
+    }
+    
+    .checkout__order__total tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.checkout__order__total tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+    
+    .site-btn {
+      display: block;
+      margin: auto;
+      padding: 10px 20px;
+      background-color: #0066cc;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .site-btn:hover {
+      background-color: #004d99;
+    }
+    .card-body {
+  background-color: #f2f2f2;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.card-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.card-subtitle {
+  font-size: 16px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+
+.card-text {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: black;
+}
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f5f5f5;
+}
+
+.table th,
+.table td {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+  vertical-align: middle;
+}
+
+.table th {
+  font-weight: bold;
+  text-align: center;
+}
+
+.table td {
+  text-align: center;
+}
+
+.cart__product__item__title h6 {
+  margin: 0;
+}
+
+.cart__product__item__title p {
+  margin: 0;
+}
+
+
+
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Checkout Section Begin -->
+    <section style="padding-bottom:50px" class="checkout spad">
+        <div class="container">
+            <div style="padding:30px">
+            <a href="{% url 'view_all_orders' %}" class="primary-btn btn-lg" style="margin-bottom:150px;background-color: rgb(100, 146, 163);"><i class="icon-copy fa fa-hand-o-left" aria-hidden="true"></i> Back</a>
+                        <br>
+                    </div>
+                        <div class="col-lg-12">
+                            <div>
+                              <h5 style="color: #111111;
+                              font-weight: 600;
+                              text-transform: uppercase;"><i class="icon-copy fa fa-file-text" aria-hidden="true"></i> Order Summary</h5>
+                                <hr>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                      <thead>
+                                        <tr>
+                                          <th></th>
+                                          <th scope="col">Product</th>
+                                          <th>Quantity</th>
+                                          <th>Total</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {% for item in items %}
+                                        <tr>
+                                          <td>
+                                            <img style="width: 50px;height: 50px;" src="/media/{{item.product.product_images.first.img}}">
+                                          </td>
+                                          <td>
+                                            <div class="cart__product__item__title">
+                                              <h6>{{item.product.name}}</h6>
+                                  
+                                              <span></span><button class="btn btn-sm "  style="background-color: {{item.product_variant.color.name}}"> </button>
+                                  
+                                              {% if item.product.section.first.name == 'Kids' %}
+                                              <p>Size : {{item.product_variant.by_age.name}}</p>
+                                              {% else %}
+                                              <p>Size : {{item.product_variant.size.name}}</p>
+                                              {% endif %}
+                                            </div>
+                                          </td>
+                                          <td>{{item.quantity}}</td>
+                                          <td>₹{{item.get_total}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  
+                                  
+                                  <table class="checkout__order__product">
+                                    <tbody>
+                                      <tr>
+                                        <td style="width:150px;text-align: right;size: 16px;font-weight: 600;">Total</td>
+                                        <td style="text-align: center;width: 50px;size: 16px;font-weight: 600;">₹{{order.get_original_cart_total}}</td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width:150px;text-align: right;size: 16px;font-weight: 600;">Coupon Discount</td>
+                                        <td style="text-align: center;width: 50px;size: 16px;font-weight: 600;">-₹{{order.get_discount}}</td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width:150px;text-align: right;size: 16px;font-weight: 600;">Offer Discount</td>
+                                        <td style="text-align: center;width: 50px;size: 16px;font-weight: 600;">-₹{{order.get_total_offer_discount}}</td>
+                                      </tr>
+                                      <tr>
+                                        
+                                        <td style="width:150px;text-align: right  ;size: 16px;font-weight: 600;" >Bill Amount</td>
+                                       
+                                        <td style="text-align: center;width: 50px;size: 16px;font-weight: 600;">₹{{order.get_grand_total}}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                  <table class="checkout__order__total">
+                                    <thead>
+                                      <tr>
+                                        
+                                        <th>Order Details</th>
+                                        <th></th>
+                                        
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr><td>Transaction ID :</td>
+                                        <td>
+                                          {{order.transaction_id}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                      <td>Name :</td>
+                                        <td>
+                                          <span>{{order.shipping_address.first_name}} {{order.shipping_address.last_name}}</span>
+                                        </td>
+                                        </tr>
+                                        <tr><td>
+                                          Date of Order :
+                                        </td>
+                                        <td>{{order.date_ordered}}</td></tr>
+                                        <tr><td>
+                                          Delivery Date
+                                        </td>
+                                        <td>{{order.delivery_date}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td>Status</td>
+
+                                          <td>{{order.status}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td>Method of Payment</td>
+                                        <td>{{order.payment_method}}</td>
+                                      </tr>
+                                        
+                                      
+                                    </tbody>
+                                  </table>
+                                  <div class="card shipping-address">
+                                    <div class="card-body">
+                                      <address>
+                                        <div class="row">
+                                          <div class="col-md-6">
+                                            <h4>Contact Information</h4>
+                                            <hr>
+                                            <ul class="list-unstyled">
+                                              <li style="margin-bottom:10px"><strong>Name:</strong> {{order.shipping_address.first_name}} {{order.shipping_address.last_name}}</li>
+                                              <li style="margin-bottom:10px"><strong>Email:</strong> {{order.shipping_address.email}}</li>
+                                              <li style="margin-bottom:10px"><strong>Phone:</strong> {{order.shipping_address.phone}}</li>
+                                            </ul>
+                                          </div>
+                                          <div class="col-md-6">
+                                            <h4>Shipping Address</h4>
+                                            <hr>
+                                            <dl class="row">
+                                              <dt class="col-sm-4">Street Address:</dt>
+                                              <dd class="col-sm-8">{{order.shipping_address.address}}</dd>
+                                              <dt class="col-sm-4">City:</dt>
+                                              <dd class="col-sm-8">{{order.shipping_address.city}}</dd>
+                                              <dt class="col-sm-4">State/Province:</dt>
+                                              <dd class="col-sm-8">{{order.shipping_address.state}}</dd>
+                                              <dt class="col-sm-4">Country:</dt>
+                                              <dd class="col-sm-8">{{order.shipping_address.country}}</dd>
+                                              <dt class="col-sm-4">Postal Code:</dt>
+                                              <dd class="col-sm-8">{{order.shipping_address.pincode}}</dd>
+                                            </dl>
+                                          </div>
+                                        </div>
+                                      </address>
+                                    </div>
+                                  </div>
+                                  
+                </form>
+            </div>
+        </section>
+        <!-- Checkout Section End -->
+        
+
+        
+
+{% endblock %}

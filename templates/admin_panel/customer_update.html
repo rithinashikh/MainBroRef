@@ -1,0 +1,56 @@
+{% extends 'base/admin_base.html' %}
+
+{% block title%}update customer details{% endblock %}
+{% block content %}
+<div class="signup-form">
+    <form action="" method="post">
+        {% csrf_token %}
+        {% include "base/alerts.html" %}
+
+		<h2 class="text-center">Update Customer details</h2>
+		<p class="text-center">Update user's details here!!</p>
+		<hr>
+        <div class="form-group">
+            <label for = " ">First Name</label>
+            {{form.first_name}}
+            {% if form.errors.first_name %}
+                <label for="" class="text-danger">{{form.errors.first_name}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Last Name</label>
+            {{form.last_name}}
+            {% if form.errors.last_name %}
+                <label for="" class="text-danger">{{form.errors.last_name}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Email Address</label>
+            {{form.email}}
+            {% if form.errors.email %}
+                <label for="" class="text-danger">{{form.errors.email}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Mobile No</label>
+            {{form.mobile}}
+            {% if form.errors.mobile %}
+                <label for="" class="text-danger">{{form.errors.mobile}}</label>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for = " ">Block</label>
+            {{form.is_blocked}}
+            {% if form.errors.is_blocked %}
+                <label for="" class="text-danger">{{form.errors.is_blocked}}</label>
+            {% endif %}
+        </div>
+        
+           
+		<div class="form-group">
+            <button type="submit" class="btn btn-success btn-lg">Update</button>
+        </div>
+    </form>
+   
+	
+{% endblock%}

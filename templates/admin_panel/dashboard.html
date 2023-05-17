@@ -1,0 +1,608 @@
+{% extends "base/admin_base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block head %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endblock %}
+{% block content %}
+<div class="title pb-20">
+	<h2 class="h3 mb-0">Overview</h2>
+</div>
+<div class="row pb-10">
+	<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+		<div class="card-box height-100-p widget-style3">
+			<div class="d-flex flex-wrap">
+				<div class="widget-data">
+					<div class="weight-700 font-24 text-dark">₹{{total_income}}</div>
+					<div class="font-14 text-secondary weight-500">Total Income</div>
+				</div>
+				<div class="widget-icon">
+					<a href="{% url 'sales_report' %}">
+					<div class="icon" data-color="#09cc06">
+						<i class="icon-copy fa fa-money" aria-hidden="true"></i>
+					</div></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+		<div class="card-box height-100-p widget-style3">
+			<div class="d-flex flex-wrap">
+				<div class="widget-data">
+					<div class="weight-700 font-24 text-dark">{{total_orders}}</div>
+					<div class="font-14 text-secondary weight-500">
+						Orders
+					</div>
+				</div>
+				<div class="widget-icon">
+					<a href="{% url 'view_all_orders' %}" >
+					<div class="icon" data-color="#00eccf">
+						<i class="icon-copy bi bi-cart2"></i>
+					</div></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+		<div class="card-box height-100-p widget-style3">
+			<div class="d-flex flex-wrap">
+				<div class="widget-data">
+					<div class="weight-700 font-24 text-dark">{{total_products}}</div>
+					<div class="font-14 text-secondary weight-500">
+						Products
+					</div>
+				</div>
+				<div class="widget-icon">
+					<a href="{% url 'product_details' %}">
+					<div class="icon" data-color="#ff5b5b">
+						<span class="icon-copy fa fa-shopping-bag"></span>
+					</div></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+		<div class="card-box height-100-p widget-style3">
+			<div class="d-flex flex-wrap">
+				<div class="widget-data">
+					<div class="weight-700 font-24 text-dark">{{total_registrations}}</div>
+					<div class="font-14 text-secondary weight-500">
+						Total Registrations
+					</div>
+				</div>
+				<div class="widget-icon">
+					<a href="{% url 'customer_details' %}">
+					<div class="icon">
+						<i
+						class="icon-copy bi bi-person-plus-fill"
+							aria-hidden="true"
+						></i>
+						
+					</div></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<div class="row pb-10">
+	<div class="col-md-7 mb-20">
+		<div class="card-box height-100-p pd-20">
+			<div
+				class="d-flex flex-wrap justify-content-between align-items-center pb-0 pb-md-3"
+			>
+				<div class="h5 mb-md-0">Order VS Deliveries</div>
+				<div class="form-group mb-md-0">
+					<select class="form-control form-control-sm selectpicker" onchange="showCanvas(this.value)">
+						<option value="week">This Week</option>
+						<option value="month">ThisMonth</option>
+						<option value="year">This year</option>
+					</select>
+				</div>
+			</div>
+			<canvas id="myChart-week"></canvas>
+			<canvas id="myChart-month" style="display:none;"></canvas>
+			<canvas id="myChart-year" style="display:none;"></canvas>
+
+		</div>
+	</div>
+	<div class="col-md-5 mb-20 ">
+			Total Products
+		<div
+			class="card-box min-height-200px pd-20 mb-20"
+			data-bgcolor="white">
+			<canvas id="products-pie-chart"></canvas>
+		</div>
+		<div class="card-box min-height-200px pd-20" data-bgcolor="white">
+			<div class="h5 mb-md-0">Total Income</div>
+				<div class="form-group mb-md-0">
+					<select class="form-control form-control-sm selectoption" onchange="showIncome(this.value)">
+						<option value="daily">This week</option>
+						<option value="weekly">This month</option>
+						<option value="monthly">This year</option>
+					</select>
+				</div>
+			
+			<canvas id="daily-income-chart"></canvas>
+			<canvas id="monthly-income-chart" style="display:none;"></canvas>
+			<canvas id="yearly-income-chart" style="display:none;"></canvas>
+			
+
+			
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-4 col-md-6 mb-20">
+		<div class="card-box height-100-p pd-20 min-height-200px">
+			<div class="d-flex justify-content-between pb-10">
+				<div class="h5 mb-0">Top selling Products</div>
+				
+			</div>
+			<div class="user-list">
+				<ul>
+					{% for i,j in top_selling_products.items %}
+					<li class="d-flex align-items-center justify-content-between">
+						<div class="name-avatar d-flex align-items-center pr-2">
+							<div class="avatar mr-2 flex-shrink-0">
+								<img
+									src="/media/{{i.product_images.first.img}}"
+									class="border-radius-100 box-shadow"
+									width="50"
+									height="50"
+									alt=""
+								/>
+							</div>
+							<div class="txt">
+								<span
+									class="badge badge-pill badge-sm"
+									data-bgcolor="#e7ebf5"
+									data-color="#265ed7"
+									>{{j}} orders</span
+								>
+								<div class="font-14 weight-600">{{i}}</div>
+								<div class="font-12 weight-500" data-color="#b2b1b6">
+									{{i.brand.first.name}}
+								</div>
+							</div>
+						</div>
+						<div class="cta flex-shrink-0">
+							<a href="{% url 'product_update' i.uid %}" class="btn btn-sm btn-outline-primary"
+								>Update</a
+							>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-4 col-md-6 mb-20">
+		<div class="card-box height-100-p pd-20 min-height-200px">
+			<div class="d-flex justify-content-between pb-10">
+				<div class="h5 mb-0">Soon to be out of order</div>
+				
+			</div>
+			<div class="user-list">
+				<ul>
+					{% for i,j in soon_to_be_outoforder.items %}
+					<li class="d-flex align-items-center justify-content-between">
+						<div class="name-avatar d-flex align-items-center pr-2">
+							<div class="avatar mr-2 flex-shrink-0">
+								<img
+									src="/media/{{i.product_images.first.img}}"
+									class="border-radius-100 box-shadow"
+									width="50"
+									height="50"
+									alt=""
+								/>
+							</div>
+							<div class="txt">
+								<span
+									class="badge badge-pill badge-sm"
+									data-bgcolor="#e7ebf5"
+									data-color="#265ed7"
+									>In Stock : {{j}}</span
+								>
+								<div class="font-14 weight-600">{{i}}</div>
+								<div class="font-12 weight-500" data-color="#b2b1b6">
+									{{i.brand.name}}
+								</div>
+							</div>
+						</div>
+						<div class="cta flex-shrink-0">
+							<a href="{% url 'product_update' i.uid %}" class="btn btn-sm btn-outline-primary"
+								>Update</a
+							>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-4 col-md-6 mb-20">
+		<div class="card-box height-100-p pd-20 min-height-200px">
+			<div class="d-flex justify-content-between pb-10">
+				<div class="h5 mb-0">Least Ordered</div>
+				
+			</div>
+			<div class="user-list">
+				<ul>
+					{% for i,j in least_selling_products.items %}
+					<li class="d-flex align-items-center justify-content-between">
+						<div class="name-avatar d-flex align-items-center pr-2">
+							<div class="avatar mr-2 flex-shrink-0">
+								<img
+									src="/media/{{i.product_images.first.img}}"
+									class="border-radius-100 box-shadow"
+									width="50"
+									height="50"
+									alt=""
+								/>
+							</div>
+							<div class="txt">
+								<span
+									class="badge badge-pill badge-sm"
+									data-bgcolor="#e7ebf5"
+									data-color="#265ed7"
+									>{{j}} orders</span
+								>
+								<div class="font-14 weight-600">{{i}}</div>
+								<div class="font-12 weight-500" data-color="#b2b1b6">
+									{{i.brand.name}}
+								</div>
+							</div>
+						</div>
+						<div class="cta flex-shrink-0">
+							<a href="{% url 'product_update' i.uid %}" class="btn btn-sm btn-outline-primary"
+								>Update</a
+							>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- last table -->
+<div class="card-box pb-10">
+	<div class="h5 pd-20 mb-0">Recent Orders</div>
+	<table class=" table nowrap">
+		<thead>
+			
+			<tr>
+				<th class="">Order ID</th>
+				<th>Date of Order</th>
+				<th>Date of Delivery</th>
+				<th>Shipping Address</th>
+				<th>Order Amount</th>
+				<th>Mode of Payment</th>
+				<th>Status</th>
+				<th class="datatable-nosort">View</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				{% for i in new_orders %}
+				<td>{{i.transaction_id}}</td>
+				<td>{{i.date_ordered}}</td>
+				<td>{{i.delivery_date}}</td>
+				<td>{{i.shipping_address.address}} {{i.shipping_address.city}}</td>
+				<td>{{i.get_grand_total}}</td>
+				<td>
+					<span
+						class="badge badge-pill"
+						data-bgcolor="#e7ebf5"
+						data-color="#265ed7"
+						>{{i.payment_method}}</span
+					>
+				</td>
+				<td>
+					<span
+						class="badge badge-pill"
+						data-bgcolor="rgb(225, 160, 114)"
+						data-color="rgb(1, 1, 0)"
+						>{{i.status}}</span
+					>
+				</td>
+
+				<td>
+					<div class="table-actions" >
+						<a href="{% url 'view_order_details' i.uid  %}" data-color="#265ed7"
+							><i class="icon-copy fa fa-eye" aria-hidden="true"></i></i
+						></a>
+						
+					</div>
+				</td>
+			</tr>
+			{% endfor %}
+				
+		</tbody>
+	</table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+	var ctx = document.getElementById('myChart-week').getContext('2d');
+	var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for key, value in weekly_count.items %}"{{ key }}", {% endfor %}],
+        datasets: [{
+            label: 'Total Orders',
+            data: [{% for key, value in weekly_count.items %}{{ value }}, {% endfor %}], // Replace with your data
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        },
+        {
+            label: 'Delivered',
+            data: [{% for key, value in weekly_delivered.items %}{{ value }}, {% endfor %}], // Replace with your data
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.2)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }],
+			xAxes: [{
+            ticks: {
+                beginAtZero: true
+            }
+        }],
+        }
+    }
+});
+
+
+var ctx = document.getElementById('myChart-month').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+		labels: [{% for key, value in monthly_count.items %}"{{ key }}", {% endfor %}],
+        datasets: [{
+            label: 'Total Orders',
+            data: [{% for key, value in monthly_count.items %}{{ value }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        },
+        {
+            label: 'Delivered',
+            data: [{% for key, value in monthly_delivered.items %}{{ value }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.2)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }],
+        }
+    }
+});
+
+var ctx = document.getElementById('myChart-year').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for key, value in yearly_count.items %}"{{ key }}", {% endfor %}],
+        datasets: [{
+            label: 'Total Orders',
+            data: [{% for key, value in yearly_count.items %}{{ value }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        },
+        {
+            label: 'Delivered',
+			data: [{% for key, value in yearly_delivered.items %}{{ value }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.2)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }],
+        }
+    }
+});
+
+function showCanvas(value) {
+	console.log(value)
+	if (value == "week") {
+        document.getElementById("myChart-week").style.display = "block";
+        document.getElementById("myChart-month").style.display = "none";
+        document.getElementById("myChart-year").style.display = "none";
+    } else if (value == "month") {
+        document.getElementById("myChart-week").style.display = "none";
+        document.getElementById("myChart-month").style.display = "block";
+        document.getElementById("myChart-year").style.display = "none";
+    } else if (value == "year") {
+        document.getElementById("myChart-week").style.display = "none";
+        document.getElementById("myChart-month").style.display = "none";
+        document.getElementById("myChart-year").style.display = "block";
+    }
+}
+
+var ctx = document.getElementById('products-pie-chart').getContext('2d');
+    var myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Men', 'Women', 'Kids'],
+            datasets: [{
+                data: [
+                    {{ products_count.Men }},
+                    {{ products_count.Women }},
+                    {{ products_count.Kids }}
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                position: 'bottom',
+                labels: {
+                    fontColor: 'rgb(154, 154, 154)',
+                    fontSize: 12,
+                    usePointStyle: true,
+                    padding: 20
+                }
+            },
+            tooltips: {
+                backgroundColor: '#fff',
+                bodyFontColor: '#000',
+                titleFontColor: '#000',
+                borderColor: 'rgb(231, 231, 231)',
+                borderWidth: 2,
+                xPadding: 10,
+                yPadding: 10,
+                displayColors: false,
+                intersect: false,
+                mode: 'index',
+                caretPadding: 10
+            }
+        }
+    });
+
+	var ctx = document.getElementById('daily-income-chart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for key, value in daily_income.items %}"{{ key }}", {% endfor %}],
+                datasets: [{
+                    label: 'Daily Income',
+                    data: [{% for key, value in daily_income.items %}"{{ value }}", {% endfor %}],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+		var ctx = document.getElementById('monthly-income-chart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for key, value in monthly_income.items %}"{{ key }}", {% endfor %}],
+                datasets: [{
+                    label: 'Weekly Income',
+                    data: [{% for key, value in monthly_income.items %}"{{ value }}", {% endfor %}],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+		var ctx = document.getElementById('yearly-income-chart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for key, value in yearly_income.items %}"{{ key }}", {% endfor %}],
+                datasets: [{
+                    label: 'Monthly Income',
+                    data: [{% for key, value in yearly_income.items %}"{{ value }}", {% endfor %}],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+	
+	function showIncome(value) {
+	console.log(value)
+	if (value == "daily") {
+        document.getElementById("daily-income-chart").style.display = "block";
+        document.getElementById("monthly-income-chart").style.display = "none";
+        document.getElementById("yearly-income-chart").style.display = "none";
+    } else if (value == "weekly") {
+        document.getElementById("daily-income-chart").style.display = "none";
+        document.getElementById("monthly-income-chart").style.display = "block";
+        document.getElementById("yearly-income-chart").style.display = "none";
+    } else if (value == "monthly") {
+        document.getElementById("daily-income-chart").style.display = "none";
+        document.getElementById("monthly-income-chart").style.display = "none";
+        document.getElementById("yearly-income-chart").style.display = "block";
+    }
+}
+
+</script>
+{% endblock %}
